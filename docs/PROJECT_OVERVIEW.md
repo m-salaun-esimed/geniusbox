@@ -121,7 +121,7 @@ Le choix d'Electron répond à l'objectif de simplicité de déploiement :
 - desktop/src/storage/questionPacks.ts : stockage des packs de questions.
 - desktop/electron/main.ts : processus principal Electron.
 - desktop/electron/preload.ts : couche de communication sécurisée.
-- tests/engine.test.ts : tests de logique métier.
+- desktop/tests/engine.test.ts : tests de logique métier.
 
 ## Exécution du projet
 
