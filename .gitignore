@@ -1,48 +1,5 @@
-# Dependencies
-node_modules/
-desktop/node_modules/
-
-desktop/node_modules/
-
-# Build outputs
-dist/
-dist-electron/
-desktop/dist/
-desktop/dist-electron/
-out/
-release/
-
-# Electron builder artifacts
-*.dmg
-*.blockmap
-*.exe
-*.AppImage
-*.snap
-*.deb
-*.rpm
-*.pkg
-
-# Vite / TypeScript / Vitest cache
-.vite/
-desktop/.vite/
-*.tsbuildinfo
-coverage/
-desktop/coverage/
-
-# Environment files
-.env
-.env.*
-!.env.example
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# OS / editor junk
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
+package-lock.json
+node_modules
+dist
+dist-electron
+build-resources
