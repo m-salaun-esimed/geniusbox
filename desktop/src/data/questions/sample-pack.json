@@ -1,0 +1,223 @@
+[
+  {
+    "id": "card_1",
+    "title": "Cette invention vient-elle d'un homme ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Soutien-gorge", "correctAnswer": "false" },
+      { "id": "p_2", "text": "Monopoly", "correctAnswer": "true" },
+      { "id": "p_3", "text": "Essuie-glace", "correctAnswer": "false" },
+      { "id": "p_4", "text": "Teflon", "correctAnswer": "true" },
+      { "id": "p_5", "text": "Scie circulaire", "correctAnswer": "false" },
+      { "id": "p_6", "text": "Telephone", "correctAnswer": "true" },
+      { "id": "p_7", "text": "Lave-vaisselle", "correctAnswer": "false" },
+      { "id": "p_8", "text": "Stylo a bille", "correctAnswer": "true" },
+      { "id": "p_9", "text": "Kevlar", "correctAnswer": "false" },
+      { "id": "p_10", "text": "Aspirine", "correctAnswer": "true" }
+    ]
+  },
+  {
+    "id": "card_2",
+    "title": "Cet animal vit-il principalement dans l'eau ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Dauphin", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Chameau", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Requin", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Lion", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Phoque", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Aigle", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Meduse", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Cheval", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Orque", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Girafe", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_3",
+    "title": "Ce pays se trouve-t-il en Europe ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Portugal", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Bresil", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Norvege", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Japon", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Pologne", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Argentine", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Belgique", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Maroc", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Croatie", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Canada", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_4",
+    "title": "Cet element est-il un metal ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Fer", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Oxygene", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Cuivre", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Carbone", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Aluminium", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Soufre", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Or", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Chlore", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Argent", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Hydrogene", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_5",
+    "title": "Ce sport se joue-t-il avec un ballon ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Football", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Natation", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Basketball", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Judo", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Handball", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Athletisme", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Rugby", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Escalade", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Volleyball", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Escrime", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_6",
+    "title": "Ce film est-il un film d'animation ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Le Roi Lion", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Inception", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Shrek", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Titanic", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Toy Story", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Gladiator", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Le Voyage de Chihiro", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Interstellar", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Vice-Versa", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Se7en", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_7",
+    "title": "Cet objet fonctionne-t-il a l'electricite ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Aspirateur", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Marteau", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Refrigerateur", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Boussole", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Lampe LED", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Cle anglaise", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Micro-ondes", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Tournevis", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Ordinateur", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Couteau", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_8",
+    "title": "Cette langue est-elle latine ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Francais", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Allemand", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Espagnol", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Neerlandais", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Italien", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Suedois", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Portugais", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Danois", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Roumain", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Islandais", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_9",
+    "title": "Ce plat est-il generalement sucre ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Tarte aux pommes", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Pizza margherita", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Mousse au chocolat", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Lasagnes", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Crepe au sucre", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Quiche lorraine", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Eclair au chocolat", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Ratatouille", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Macaron", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Soupe a l'oignon", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_10",
+    "title": "Ce personnage appartient-il a l'univers Marvel ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Iron Man", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Batman", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Thor", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Superman", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Spider-Man", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Wonder Woman", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Black Panther", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Flash", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Doctor Strange", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Aquaman", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_11",
+    "title": "Pays les plus peuples: quelle est la position ?",
+    "type": "ranking",
+    "propositions": [
+      { "id": "p_1", "text": "Inde", "correctAnswer": "1" },
+      { "id": "p_2", "text": "Chine", "correctAnswer": "2" },
+      { "id": "p_3", "text": "Etats-Unis", "correctAnswer": "3" },
+      { "id": "p_4", "text": "Indonesie", "correctAnswer": "4" },
+      { "id": "p_5", "text": "Pakistan", "correctAnswer": "5" },
+      { "id": "p_6", "text": "Nigeria", "correctAnswer": "6" },
+      { "id": "p_7", "text": "Bresil", "correctAnswer": "7" },
+      { "id": "p_8", "text": "Bangladesh", "correctAnswer": "8" },
+      { "id": "p_9", "text": "Russie", "correctAnswer": "9" },
+      { "id": "p_10", "text": "Mexique", "correctAnswer": "10" }
+    ]
+  },
+  {
+    "id": "card_12",
+    "title": "Cette personnalite est-elle un homme ou une femme ?",
+    "type": "binary_choice",
+    "propositions": [
+      { "id": "p_1", "text": "Marie Curie", "correctAnswer": "femme" },
+      { "id": "p_2", "text": "Victor Hugo", "correctAnswer": "homme" },
+      { "id": "p_3", "text": "Simone Veil", "correctAnswer": "femme" },
+      { "id": "p_4", "text": "Nelson Mandela", "correctAnswer": "homme" },
+      { "id": "p_5", "text": "Frida Kahlo", "correctAnswer": "femme" },
+      { "id": "p_6", "text": "Albert Einstein", "correctAnswer": "homme" },
+      { "id": "p_7", "text": "Rosa Parks", "correctAnswer": "femme" },
+      { "id": "p_8", "text": "Leonard de Vinci", "correctAnswer": "homme" },
+      { "id": "p_9", "text": "Ada Lovelace", "correctAnswer": "femme" },
+      { "id": "p_10", "text": "Louis Pasteur", "correctAnswer": "homme" }
+    ]
+  },
+  {
+    "id": "card_13",
+    "title": "Reponse libre: donne le pays de la capitale",
+    "type": "free_text",
+    "propositions": [
+      { "id": "p_1", "text": "Paris", "correctAnswer": "France" },
+      { "id": "p_2", "text": "Rome", "correctAnswer": "Italie" },
+      { "id": "p_3", "text": "Madrid", "correctAnswer": "Espagne" },
+      { "id": "p_4", "text": "Berlin", "correctAnswer": "Allemagne" },
+      { "id": "p_5", "text": "Lisbonne", "correctAnswer": "Portugal" },
+      { "id": "p_6", "text": "Athenes", "correctAnswer": "Grece" },
+      { "id": "p_7", "text": "Dublin", "correctAnswer": "Irlande" },
+      { "id": "p_8", "text": "Vienne", "correctAnswer": "Autriche" },
+      { "id": "p_9", "text": "Oslo", "correctAnswer": "Norvege" },
+      { "id": "p_10", "text": "Helsinki", "correctAnswer": "Finlande" }
+    ]
+  }
+]
