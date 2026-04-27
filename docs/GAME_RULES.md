@@ -4,6 +4,7 @@
 
 - 1 à 10 joueurs peuvent être configurés.
 - Un objectif de points est défini avant le lancement.
+- Un timer d'ambiance est configurable (15s, 30s, 45s).
 - Le parcours est construit en sélectionnant des cartes dans l'étape Parcours.
 - L'ordre des cartes est modifiable avant démarrage.
 
@@ -46,7 +47,8 @@
 
 ## 6. Import / export et parcours
 
-- Export : toutes les cartes sont exportées au format JSON.
-- Import : un JSON valide remplace le catalogue de cartes courant.
+- Export : l'utilisateur peut exporter tout ou partie des cartes au format JSON.
+- Import : un JSON valide ajoute des cartes au catalogue existant.
 - Le parcours est choisi au lancement en sélectionnant les cartes à jouer.
-- Le parcours n'est pas persisté comme entité séparée dans le JSON d'export.
+- Les parcours sont sauvegardables localement (création, mise à jour, suppression).
+- Le JSON d'export/import concerne les cartes, pas les parcours sauvegardés.

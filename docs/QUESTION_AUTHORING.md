@@ -26,16 +26,17 @@ Règles de validation :
 Le flux d'import/export est disponible dans l'étape Cartes.
 
 Export :
-- action Exporter toutes les cartes ;
-- génération d'un JSON contenant l'ensemble du catalogue de cartes courant.
+- action Mode Export ;
+- sélection des cartes à exporter ;
+- génération d'un JSON copiable contenant uniquement la sélection.
 
 Import :
 - coller un JSON valide dans la zone d'import ;
-- cliquer sur Importer le JSON ;
-- si valide, le catalogue de cartes est remplacé par le contenu importé.
+- cliquer sur Importer le JSON (ajout) ;
+- si valide, les cartes importées sont ajoutées au catalogue existant.
 
 Remarques importantes :
-- l'import ne fusionne pas les cartes ; il remplace l'état courant ;
+- l'import est additif (il n'écrase pas les cartes existantes) ;
 - si le JSON est invalide, l'import est refusé ;
 - les cartes importées sont persistées localement.
 
@@ -50,8 +51,8 @@ Le parcours se compose dans l'étape Parcours :
 
 Remarques importantes :
 - le parcours est une sélection ordonnée de cartes ;
-- il n'est pas exporté/importé comme objet distinct ;
-- après import de cartes, la sélection de parcours en cours est réinitialisée.
+- les parcours peuvent être sauvegardés localement (nom + catégorie + ordre des cartes) ;
+- le parcours n'est pas exporté/importé comme objet distinct en JSON.
 
 ## 4. Structure JSON attendue
 

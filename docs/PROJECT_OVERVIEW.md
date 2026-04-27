@@ -52,6 +52,7 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 - Composer un parcours de partie en sélectionnant les cartes.
 - Réordonner les cartes du parcours avant lancement.
 - Retirer des cartes du parcours.
+- Créer, modifier et supprimer des parcours sauvegardés.
 - Sauvegarder localement le catalogue de cartes.
 
 ### Conception des cartes
@@ -69,22 +70,24 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 
 ### Import / export et parcours
 
-- Export de toutes les cartes en JSON depuis l'étape Cartes.
-- Import d'un JSON valide pour remplacer le catalogue de cartes.
+- Export des cartes sélectionnées en JSON depuis l'étape Cartes.
+- Import d'un JSON valide pour ajouter des cartes au catalogue existant.
 - Construction du parcours depuis l'étape Parcours : ajout, retrait et réordonnancement des cartes.
-- Le parcours est une sélection de session (il n'est pas importé/exporté comme objet séparé).
+- Les parcours peuvent être sauvegardés et réutilisés localement.
+- Les parcours ne sont pas importés/exportés en JSON (seules les cartes le sont).
 
 ### Déroulement d'une partie
 
 - Démarrer une partie avec un ou plusieurs joueurs.
 - Choisir le parcours avant le lancement.
 - Définir un score cible ou jouer sans limite.
+- Régler un timer d'ambiance (15s, 30s ou 45s) pour le rythme de jeu.
 - Répondre proposition par proposition.
 - Verrouiller les propositions déjà traitées.
 - Afficher un retour visuel immédiat (bonne/mauvaise réponse).
 - Capitaliser les points ou continuer la carte.
 - Suivre les scores en direct.
-- Afficher le classement final et le podium.
+- Afficher le classement final (égalité possible).
 
 ## Flux utilisateur
 

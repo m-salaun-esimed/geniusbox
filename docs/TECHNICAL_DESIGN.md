@@ -69,9 +69,11 @@ Rôles :
 - `desktop/src/app/store.ts`
 
 Le store centralise :
-- la configuration de partie (`setupPlayers`, `targetPointsToWin`, sélection des cartes) ;
+- la configuration de partie (`setupPlayers`, `targetPointsToWin`, `timerSeconds`, sélection des cartes) ;
 - l'état dynamique d'une partie (`matchState`) ;
 - les commandes de transition (start, réponse, arrêt, continuation, fin de manche).
+
+Le timer est un timer d'ambiance affiché en partie (15, 30 ou 45 secondes), réinitialisé au changement de joueur/carte.
 
 Le modèle est orienté machine à états avec phases explicites :
 - `in_round`
@@ -110,7 +112,15 @@ Le parcours de partie est un ordre de cartes conservé dans l'état applicatif :
 Important :
 
 - l'export JSON porte sur les cartes (catalogue), pas sur le parcours de partie ;
-- l'import de cartes réinitialise la sélection de parcours en cours.
+- l'import de cartes est additif (les cartes importées sont ajoutées au catalogue).
+
+### 3.6 Parcours sauvegardés
+
+Les parcours sont persistés localement via `smart10.paths` :
+
+- structure `SavedPath` : `id`, `name`, `category`, `cardIds` ;
+- création/mise à jour/suppression depuis l'étape Parcours ;
+- chargement et réutilisation des parcours existants dans la configuration de partie.
 
 ## 4. Modèle de données
 

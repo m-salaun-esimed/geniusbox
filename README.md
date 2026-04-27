@@ -10,10 +10,12 @@ Elle permet de créer des parcours, lancer des parties multi-joueurs, suivre les
 - Création, modification et suppression de cartes.
 - Cartes de jeu avec 4 types de questions : Vrai/Faux, Classement, Choix multiple, Réponse libre.
 - Règle métier : 10 propositions obligatoires par carte.
-- Export et import des cartes au format JSON depuis l'éditeur.
-- Choix des cartes pour composer le parcours de la partie (ordre modifiable avant lancement).
+- Timer configurable (15s, 30s ou 45s) pendant les manches.
+- Export des cartes sélectionnées et import JSON en mode ajout depuis l'éditeur.
+- Gestion des parcours (création, modification, suppression, sélection) avec persistance locale.
 - Gestion multi-joueurs avec score cible ou mode illimité.
 - Feedback visuel immédiat des réponses et verrouillage des propositions déjà traitées.
+- Classement final automatique (podium/égalité possible).
 - Sauvegarde locale des données.
 
 ## Stack
