@@ -183,6 +183,116 @@ export const createCard = (
 
 export const exportCards = (cards: QuestionCard[]): string => JSON.stringify(cards, null, 2);
 
+export type DetailedValidationResult =
+  | { valid: true; card: QuestionCard }
+  | { valid: false; errors: string[] };
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === "object" && !Array.isArray(value);
+
+export const validateCardDetailed = (raw: unknown): DetailedValidationResult => {
+  const errors: string[] = [];
+  if (!isPlainObject(raw)) {
+    return { valid: false, errors: ["Le JSON doit être un objet (pas un tableau)."] };
+  }
+
+  const title = typeof raw.title === "string" ? raw.title.trim() : "";
+  if (!title) {
+    errors.push("Champ 'title' manquant ou vide.");
+  }
+
+  const type = raw.type;
+  const isValidType = typeof type === "string" && QUESTION_TYPES.includes(type as QuestionType);
+  if (!isValidType) {
+    errors.push(`Champ 'type' invalide. Valeurs autorisées: ${QUESTION_TYPES.join(", ")}.`);
+  }
+
+  let normalizedChoices: string[] | undefined;
+  if (isValidType && type === "choice") {
+    const sanitized = sanitizeChoices(raw.choices);
+    if (!sanitized) {
+      errors.push(
+        `Champ 'choices' invalide pour type=choice (attendu ${MIN_CHOICE_COUNT} à ${MAX_CHOICE_COUNT} valeurs non vides).`
+      );
+    } else {
+      normalizedChoices = sanitized;
+    }
+  }
+
+  const propositions = raw.propositions;
+  if (!Array.isArray(propositions)) {
+    errors.push("Champ 'propositions' manquant ou n'est pas un tableau.");
+    return { valid: false, errors };
+  }
+  if (propositions.length !== REQUIRED_PROPOSITION_COUNT) {
+    errors.push(`${REQUIRED_PROPOSITION_COUNT} propositions attendues, ${propositions.length} reçue(s).`);
+  }
+
+  const choiceSet = normalizedChoices ? new Set(normalizedChoices) : null;
+  const normalizedPropositions: QuestionProposition[] = [];
+
+  propositions.forEach((proposition, index) => {
+    const position = index + 1;
+    if (!isPlainObject(proposition)) {
+      errors.push(`Proposition ${position} : objet invalide.`);
+      return;
+    }
+    const text = typeof proposition.text === "string" ? proposition.text.trim() : "";
+    const rawAnswer = proposition.correctAnswer;
+    const answer = typeof rawAnswer === "string" || typeof rawAnswer === "number"
+      ? String(rawAnswer).trim()
+      : "";
+    if (!text) {
+      errors.push(`Proposition ${position} : champ 'text' manquant ou vide.`);
+    }
+    if (!answer) {
+      errors.push(`Proposition ${position} : champ 'correctAnswer' manquant ou vide.`);
+    }
+    if (isValidType && answer) {
+      if (type === "true_false" && answer !== "true" && answer !== "false") {
+        errors.push(`Proposition ${position} : correctAnswer doit être "true" ou "false".`);
+      }
+      if (type === "ranking") {
+        const numeric = Number.parseInt(answer, 10);
+        if (!Number.isFinite(numeric) || numeric < 1 || numeric > 10 || String(numeric) !== answer) {
+          errors.push(`Proposition ${position} : correctAnswer doit être un entier entre 1 et 10.`);
+        }
+      }
+      if (type === "choice" && choiceSet && !choiceSet.has(answer)) {
+        errors.push(
+          `Proposition ${position} : correctAnswer "${answer}" n'est pas dans choices [${normalizedChoices?.join(", ")}].`
+        );
+      }
+      if (type === "free_number" && parseNumericAnswer(answer) === null) {
+        errors.push(`Proposition ${position} : correctAnswer doit être un nombre.`);
+      }
+      if (type === "free_color" && !COLOR_PALETTE_IDS.includes(answer.toLowerCase())) {
+        errors.push(
+          `Proposition ${position} : correctAnswer "${answer}" doit être une couleur (${COLOR_PALETTE_IDS.join(", ")}).`
+        );
+      }
+    }
+    const propositionId =
+      typeof proposition.id === "string" && proposition.id.trim()
+        ? proposition.id.trim()
+        : `prop_${index + 1}`;
+    normalizedPropositions.push({ id: propositionId, text, correctAnswer: answer });
+  });
+
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+
+  const card: QuestionCard = {
+    id: typeof raw.id === "string" && raw.id.trim() ? raw.id.trim() : `card_${crypto.randomUUID()}`,
+    title,
+    type: type as QuestionType,
+    choices: normalizedChoices,
+    propositions: normalizedPropositions
+  };
+  return { valid: true, card };
+};
+
 export const importCardsFromJson = (raw: string): QuestionCard[] | null => {
   try {
     const candidate = JSON.parse(raw) as QuestionCard[];

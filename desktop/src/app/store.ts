@@ -12,7 +12,7 @@ import {
 } from "../storage/questionPacks";
 
 type MatchPlayerStatus = "active" | "stopped" | "eliminated";
-type MatchPhase = "in_round" | "round_summary" | "finished";
+type MatchPhase = "in_round" | "round_summary" | "match_complete" | "finished";
 export type GameMode = "flash" | "parcours";
 const PATHS_STORAGE_KEY = "smart10.paths";
 
@@ -50,7 +50,11 @@ interface MatchState {
     expectedAnswer: string;
   } | null;
   winnerIds: string[];
+  suddenDeath: boolean;
+  suddenDeathDuration: number;
 }
+
+export const TIMEOUT_FEEDBACK_MESSAGE = "Temps écoulé";
 
 export interface SavedPath {
   id: string;
@@ -67,7 +71,12 @@ interface AppState {
   targetPointsToWin: number;
   selectedCardIdsForMatch: string[];
   gameMode: GameMode | null;
+  suddenDeath: boolean;
+  suddenDeathDuration: number;
   setGameMode: (mode: GameMode) => void;
+  setSuddenDeath: (enabled: boolean) => void;
+  setSuddenDeathDuration: (seconds: number) => void;
+  forfeitTurnAsTimeout: () => void;
   setPlayerName: (index: number, name: string) => void;
   addPlayer: () => void;
   removePlayer: (index: number) => void;
@@ -88,6 +97,7 @@ interface AppState {
   riskAndContinueTurn: () => void;
   acknowledgeWrongAnswerFeedback: () => void;
   continueAfterRound: () => void;
+  proceedToFinalRanking: () => void;
   terminateMatch: () => void;
   addCard: (
     title: string,
@@ -273,17 +283,29 @@ const finishMatchIfNeeded = (state: MatchState): MatchState => {
   if (!reachedTarget && !outOfCards) {
     return { ...state, phase: "round_summary", winnerIds: [] };
   }
-  const topScore = Math.max(...state.players.map((player) => player.totalScore));
+  const settledPlayers = state.players.map((player) =>
+    player.tempScore > 0
+      ? { ...player, totalScore: player.totalScore + player.tempScore, tempScore: 0 }
+      : player
+  );
+  const topScore = Math.max(...settledPlayers.map((player) => player.totalScore));
   return {
     ...state,
-    phase: "finished",
-    winnerIds: state.players.filter((player) => player.totalScore === topScore).map((player) => player.id),
+    players: settledPlayers,
+    phase: "match_complete",
+    winnerIds: settledPlayers.filter((player) => player.totalScore === topScore).map((player) => player.id),
     decisionPendingPlayerId: null,
     selectedPropositionId: null
   };
 };
 
 const resolveRoundIfEnded = (state: MatchState): MatchState => {
+  const reachedTarget = state.players.some(
+    (player) => player.totalScore + player.tempScore >= state.targetPointsToWin
+  );
+  if (reachedTarget) {
+    return finishMatchIfNeeded(state);
+  }
   const card = getCurrentCard(state);
   const allRevealed = state.revealedPropositionIds.length >= card.propositions.length;
   const noActivePlayer = getActivePlayers(state).length === 0;
@@ -311,8 +333,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   targetPointsToWin: 30,
   selectedCardIdsForMatch: [],
   gameMode: null,
+  suddenDeath: false,
+  suddenDeathDuration: 30,
   setGameMode: (mode) =>
     set((state) => (state.gameMode === mode ? state : { gameMode: mode, selectedCardIdsForMatch: [] })),
+  setSuddenDeath: (enabled) => set(() => ({ suddenDeath: enabled })),
+  setSuddenDeathDuration: (seconds) =>
+    set(() => ({ suddenDeathDuration: Math.max(5, Math.min(120, Math.round(seconds))) })),
   setPlayerName: (index, name) =>
     set((state) => {
       const updated = [...state.setupPlayers];
@@ -477,7 +504,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         decisionPendingPlayerId: null,
         wrongAnswerFeedback: null,
         pendingFreeTextValidation: null,
-        winnerIds: []
+        winnerIds: [],
+        suddenDeath: state.suddenDeath,
+        suddenDeathDuration: state.suddenDeathDuration
       }
     });
     return null;
@@ -701,6 +730,66 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
       };
     }),
+  forfeitTurnAsTimeout: () =>
+    set((state) => {
+      const match = state.matchState;
+      if (
+        !match ||
+        match.phase !== "in_round" ||
+        match.decisionPendingPlayerId ||
+        match.wrongAnswerFeedback ||
+        match.pendingFreeTextValidation
+      ) {
+        return state;
+      }
+      const current = match.players.find((player) => player.id === match.currentPlayerId);
+      if (!current || current.status !== "active") {
+        return state;
+      }
+      const card = getCurrentCard(match);
+      const proposition = match.selectedPropositionId
+        ? card.propositions.find((item) => item.id === match.selectedPropositionId) ?? null
+        : null;
+      const updatedPlayers = match.players.map((player) =>
+        player.id === current.id ? { ...player, tempScore: 0, status: "eliminated" as const } : player
+      );
+      const revealedIds = proposition
+        ? [...match.revealedPropositionIds, proposition.id]
+        : match.revealedPropositionIds;
+      const wrongIds = proposition
+        ? [...match.wrongPropositionIds, proposition.id]
+        : match.wrongPropositionIds;
+      const pendingMatch: MatchState = {
+        ...match,
+        players: updatedPlayers,
+        revealedPropositionIds: revealedIds,
+        wrongPropositionIds: wrongIds,
+        selectedPropositionId: null,
+        decisionPendingPlayerId: null,
+        wrongAnswerFeedback: null,
+        pendingFreeTextValidation: null
+      };
+      const nextPlayerId = getNextActivePlayerId(pendingMatch, current.id);
+      const correctAnswerLabel = proposition
+        ? card.type === "true_false"
+          ? proposition.correctAnswer === "true"
+            ? "Vrai"
+            : "Faux"
+          : proposition.correctAnswer
+        : "";
+      return {
+        matchState: {
+          ...pendingMatch,
+          wrongAnswerFeedback: {
+            message: TIMEOUT_FEEDBACK_MESSAGE,
+            nextPlayerId,
+            propositionId: proposition?.id ?? "",
+            propositionText: proposition?.text ?? "",
+            correctAnswer: correctAnswerLabel
+          }
+        }
+      };
+    }),
   continueAfterRound: () =>
     set((state) => {
       const match = state.matchState;
@@ -709,15 +798,17 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
       const nextIndex = match.currentCardIndex + 1;
       if (nextIndex >= match.orderedCards.length) {
-        return { matchState: finishMatchIfNeeded({ ...match, phase: "finished" }) };
+        return { matchState: finishMatchIfNeeded({ ...match, currentCardIndex: nextIndex - 1 }) };
       }
       const nextPlayers = match.players.map((player) => ({ ...player, tempScore: 0, status: "active" as const }));
+      const finisherIndex = nextPlayers.findIndex((player) => player.id === match.currentPlayerId);
+      const nextStarterIndex = finisherIndex < 0 ? 0 : (finisherIndex + 1) % nextPlayers.length;
       return {
         matchState: {
           ...match,
           phase: "in_round",
           currentCardIndex: nextIndex,
-          currentPlayerId: nextPlayers[nextIndex % nextPlayers.length].id,
+          currentPlayerId: nextPlayers[nextStarterIndex].id,
           players: nextPlayers,
           revealedPropositionIds: [],
           wrongPropositionIds: [],
@@ -727,6 +818,14 @@ export const useAppStore = create<AppState>((set, get) => ({
           pendingFreeTextValidation: null
         }
       };
+    }),
+  proceedToFinalRanking: () =>
+    set((state) => {
+      const match = state.matchState;
+      if (!match || match.phase !== "match_complete") {
+        return state;
+      }
+      return { matchState: { ...match, phase: "finished" } };
     }),
   terminateMatch: () => set({ matchState: null }),
   addCard: (title, type, propositions, choices) => {

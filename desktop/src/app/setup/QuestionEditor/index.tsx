@@ -4,6 +4,7 @@ import { createSoundEffects } from '../../soundEffects';
 import { QuestionType } from '../../../game-engine/types';
 import { TypeLegendModal } from '../../components/TypeLegendModal';
 import { DEFAULT_CHOICES, EMPTY_PROPOSITIONS, MIN_CHOICES } from '../../constants';
+import { AiImportModal } from './AiImportModal';
 import { CardEditorModal } from './CardEditorModal';
 import { CardsGrid } from './CardsGrid';
 import { ExportPanel } from './ExportPanel';
@@ -23,7 +24,8 @@ export const QuestionEditor = ({ currentStep }: QuestionEditorProps) => {
   const [importText, setImportText] = useState('');
   const [message, setMessage] = useState('');
   const [ioMode, setIoMode] = useState<'none' | 'export' | 'import'>('none');
-  const [importFlow, setImportFlow] = useState<'none' | 'json_ready' | 'from_photo'>('none');
+  const [importFlow, setImportFlow] = useState<'none' | 'json_ready'>('none');
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [selectedExportCardIds, setSelectedExportCardIds] = useState<string[]>([]);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -264,13 +266,15 @@ export const QuestionEditor = ({ currentStep }: QuestionEditorProps) => {
             setImportFlow(flow);
             if (flow === 'json_ready') {
               setMessage('Mode import direct JSON.');
-            } else if (flow === 'from_photo') {
-              setMessage('Mode conversion photo -> JSON.');
             }
             sounds.navigate();
           }}
           onImport={handleImport}
-          onCopyAiPrompt={(prompt) => copyToClipboard(prompt, 'Prompt IA copié.')}
+          onOpenAiModal={() => {
+            setIsAiModalOpen(true);
+            setMessage('Mode IA : génère le JSON depuis une photo.');
+            sounds.openModal();
+          }}
           onTemplateDownloaded={() => {
             setMessage(
               'Modèle JSON téléchargé (1 exemple par type). Ouvre le fichier pour voir le format attendu.',
@@ -314,6 +318,25 @@ export const QuestionEditor = ({ currentStep }: QuestionEditorProps) => {
         setPropositions={setPropositions}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleUpdate}
+      />
+      <AiImportModal
+        isOpen={isAiModalOpen}
+        onClose={() => {
+          setIsAiModalOpen(false);
+          sounds.navigate();
+        }}
+        onCopyPrompt={(prompt) => copyToClipboard(prompt, 'Prompt IA copié.')}
+        onSave={(card) => {
+          const error = addCard(card.title, card.type, card.propositions, card.choices);
+          if (error) {
+            sounds.wrong();
+            return error;
+          }
+          setIsAiModalOpen(false);
+          setMessage('Carte créée via IA.');
+          sounds.correct();
+          return null;
+        }}
       />
       {isLegendOpen ? <TypeLegendModal onClose={() => setIsLegendOpen(false)} /> : null}
     </div>

@@ -11,6 +11,7 @@ import { QuestionEditor } from './setup/QuestionEditor';
 import { InRoundView } from './game/InRoundView';
 import { RoundSummaryView } from './game/RoundSummaryView';
 import { FinishedView } from './game/FinishedView';
+import { MatchOutroView } from './game/MatchOutroView';
 
 export const App = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -27,7 +28,7 @@ export const App = () => {
       if (phase === 'round_summary') {
         sounds.roundEnd();
       }
-      if (phase === 'finished') {
+      if (phase === 'match_complete') {
         sounds.gameEnd();
       }
     }
@@ -63,6 +64,10 @@ export const App = () => {
 
   if (matchState?.phase === 'round_summary') {
     return <RoundSummaryView {...endMatchProps} />;
+  }
+
+  if (matchState?.phase === 'match_complete') {
+    return <MatchOutroView />;
   }
 
   if (matchState?.phase === 'finished') {

@@ -29,11 +29,18 @@ export const InRoundView = ({
     acknowledgeWrongAnswerFeedback,
     validateFreeTextAsCorrect,
     validateFreeTextAsWrong,
+    forfeitTurnAsTimeout,
   } = useAppStore();
   const sounds = useMemo(() => createSoundEffects(), []);
   const [textAnswer, setTextAnswer] = useState('');
-  const [timerRemaining, setTimerRemaining] = useState<number | null>(null);
-  const [timerDuration, setTimerDuration] = useState(30);
+  const suddenDeath = matchState?.suddenDeath ?? false;
+  const suddenDeathDuration = matchState?.suddenDeathDuration ?? 30;
+  const [timerRemaining, setTimerRemaining] = useState<number | null>(
+    suddenDeath ? suddenDeathDuration : null,
+  );
+  const [timerDuration, setTimerDuration] = useState(suddenDeath ? suddenDeathDuration : 30);
+  const textAnswerRef = useRef('');
+  textAnswerRef.current = textAnswer;
   const [viewMode, setViewMode] = useState<'wheel' | 'list'>(() => {
     if (typeof window === 'undefined') return 'wheel';
     const stored = window.localStorage.getItem('smart10.inRoundViewMode');
@@ -119,6 +126,43 @@ export const InRoundView = ({
     return () => window.clearInterval(interval);
   }, [timerRemaining, isTimerPaused, sounds]);
 
+  useEffect(() => {
+    if (!suddenDeath) return;
+    if (matchState?.phase !== 'in_round') return;
+    setTimerRemaining(suddenDeathDuration);
+  }, [
+    suddenDeath,
+    suddenDeathDuration,
+    matchState?.currentPlayerId,
+    matchState?.currentCardIndex,
+    matchState?.phase,
+  ]);
+
+  useEffect(() => {
+    if (!suddenDeath) return;
+    if (timerRemaining !== 0) return;
+    if (isTimerPaused) return;
+    if (!matchState || matchState.phase !== 'in_round') return;
+    const card = matchState.orderedCards[matchState.currentCardIndex];
+    if (!card) return;
+    const isFreeInput = card.type === 'free_text' || card.type === 'free_number';
+    const trimmed = textAnswerRef.current.trim();
+    if (isFreeInput && matchState.selectedPropositionId && trimmed) {
+      answerSelectedProposition(trimmed);
+      return;
+    }
+    sounds.wrong();
+    forfeitTurnAsTimeout();
+  }, [
+    timerRemaining,
+    suddenDeath,
+    isTimerPaused,
+    matchState,
+    answerSelectedProposition,
+    forfeitTurnAsTimeout,
+    sounds,
+  ]);
+
   if (!matchState || matchState.phase !== 'in_round') {
     return null;
   }
@@ -149,6 +193,10 @@ export const InRoundView = ({
     : false;
 
   const restartTimerIfRunning = () => {
+    if (suddenDeath) {
+      setTimerRemaining(suddenDeathDuration);
+      return;
+    }
     if (timerRemaining !== null) {
       setTimerRemaining(timerDuration);
     }
@@ -224,24 +272,30 @@ export const InRoundView = ({
                 </svg>
                 {timerRemaining === null ? 'Arrêté' : `${timerRemaining}s`}
               </div>
-              <div className='points-selector timer-points'>
-                {[15, 30, 45].map((value) => (
-                  <button
-                    key={`in_game_timer_${value}`}
-                    type='button'
-                    className={
-                      timerDuration === value ? 'points-button is-active' : 'points-button'
-                    }
-                    onClick={() => {
-                      setTimerDuration(value);
-                      setTimerRemaining(value);
-                      sounds.navigate();
-                    }}
-                  >
-                    {value}s
-                  </button>
-                ))}
-              </div>
+              {suddenDeath ? (
+                <span className='target-chip' title='Mort subite active'>
+                  Mort subite
+                </span>
+              ) : (
+                <div className='points-selector timer-points'>
+                  {[15, 30, 45].map((value) => (
+                    <button
+                      key={`in_game_timer_${value}`}
+                      type='button'
+                      className={
+                        timerDuration === value ? 'points-button is-active' : 'points-button'
+                      }
+                      onClick={() => {
+                        setTimerDuration(value);
+                        setTimerRemaining(value);
+                        sounds.navigate();
+                      }}
+                    >
+                      {value}s
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div className='game-meta-row'>
               <div className='player-pill' title={`Joueur actif: ${currentPlayer.name}`}>
@@ -719,7 +773,9 @@ export const InRoundView = ({
                     />
                   </svg>
                 </div>
-                <p className='decision-eyebrow decision-eyebrow--wrong'>Mauvaise réponse</p>
+                <p className='decision-eyebrow decision-eyebrow--wrong'>
+                  {wrongFeedback.message === 'Temps écoulé' ? 'Temps écoulé' : 'Mauvaise réponse'}
+                </p>
                 <h3 className='decision-player'>{currentPlayer.name}</h3>
                 {wrongFeedback.propositionText ? (
                   <div className='decision-points decision-points--wrong'>
@@ -729,9 +785,11 @@ export const InRoundView = ({
                     </span>
                   </div>
                 ) : null}
-                <p className='decision-helper decision-helper--wrong'>
-                  Bonne réponse&nbsp;: <strong>{wrongFeedback.correctAnswer}</strong>
-                </p>
+                {wrongFeedback.correctAnswer ? (
+                  <p className='decision-helper decision-helper--wrong'>
+                    Bonne réponse&nbsp;: <strong>{wrongFeedback.correctAnswer}</strong>
+                  </p>
+                ) : null}
                 <p className='decision-helper'>
                   Tu perds tes points en jeu et tu es éliminé pour cette carte.
                 </p>

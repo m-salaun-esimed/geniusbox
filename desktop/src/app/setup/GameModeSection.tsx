@@ -2,8 +2,17 @@ import { useMemo } from 'react';
 import { useAppStore } from '../store';
 import { createSoundEffects } from '../soundEffects';
 
+const SUDDEN_DEATH_PRESETS = [15, 30, 45, 60];
+
 export const GameModeSection = () => {
-  const { gameMode, setGameMode } = useAppStore();
+  const {
+    gameMode,
+    setGameMode,
+    suddenDeath,
+    suddenDeathDuration,
+    setSuddenDeath,
+    setSuddenDeathDuration,
+  } = useAppStore();
   const sounds = useMemo(() => createSoundEffects(), []);
   return (
     <div className='panel'>
@@ -46,6 +55,77 @@ export const GameModeSection = () => {
           </div>
         </button>
       </div>
+      {gameMode ? (
+        <>
+          <hr className='section-separator' />
+          <h3>Mort subite (option)</h3>
+          <p className='counter-text'>
+            Le timer démarre automatiquement à chaque tour. Pas de réponse à temps = élimination
+            pour la carte.
+          </p>
+          <button
+            type='button'
+            className={suddenDeath ? 'card-item is-active' : 'card-item'}
+            onClick={() => {
+              sounds.click();
+              setSuddenDeath(!suddenDeath);
+            }}
+          >
+            <div className='card-item-content'>
+              <strong className='card-item-title'>
+                {suddenDeath ? 'Mort subite : activée' : 'Mort subite : désactivée'}
+              </strong>
+              <span className='card-item-description'>
+                {suddenDeath
+                  ? `Chaque joueur dispose de ${suddenDeathDuration} secondes par tour.`
+                  : 'Active pour imposer un temps limité par tour.'}
+              </span>
+            </div>
+          </button>
+          {suddenDeath ? (
+            <>
+              <h4>Durée par tour</h4>
+              <div className='target-points-panel'>
+                <p className='counter-text'>Durée actuelle</p>
+                <div className='target-points-value'>{suddenDeathDuration} secondes</div>
+              </div>
+              <div className='points-selector target-points-selector'>
+                {SUDDEN_DEATH_PRESETS.map((value) => (
+                  <button
+                    key={`sd_preset_${value}`}
+                    type='button'
+                    className={
+                      suddenDeathDuration === value ? 'points-button is-active' : 'points-button'
+                    }
+                    onClick={() => {
+                      sounds.click();
+                      setSuddenDeathDuration(value);
+                    }}
+                  >
+                    {value}s
+                  </button>
+                ))}
+              </div>
+              <label htmlFor='sudden-death-duration-input'>Valeur personnalisée (5–120s)</label>
+              <input
+                id='sudden-death-duration-input'
+                type='number'
+                min={5}
+                max={120}
+                value={suddenDeathDuration}
+                onChange={(event) => {
+                  const parsed = Number.parseInt(event.target.value, 10);
+                  if (Number.isNaN(parsed)) {
+                    return;
+                  }
+                  setSuddenDeathDuration(parsed);
+                }}
+                placeholder='Ex: 25'
+              />
+            </>
+          ) : null}
+        </>
+      ) : null}
     </div>
   );
 };

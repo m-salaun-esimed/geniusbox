@@ -25,7 +25,15 @@ export const MatchOrderSection = () => {
   const [pathModalMode, setPathModalMode] = useState<'none' | 'create' | 'edit' | 'view'>('none');
   const [pathModalError, setPathModalError] = useState('');
   const [cardSearch, setCardSearch] = useState('');
+  const [pathSearch, setPathSearch] = useState('');
   const sounds = useMemo(() => createSoundEffects(), []);
+
+  const normalizedPathQuery = pathSearch.trim().toLowerCase();
+  const filteredSavedPaths = normalizedPathQuery
+    ? savedPaths.filter((path) =>
+        `${path.name} ${path.category}`.toLowerCase().includes(normalizedPathQuery),
+      )
+    : savedPaths;
 
   const selectedCards = selectedCardIdsForMatch
     .map((selectedId) => cards.find((card) => card.id === selectedId))
@@ -183,8 +191,47 @@ export const MatchOrderSection = () => {
           </button>
         </div>
       ) : (
-        <ul className='parcours-grid'>
-          {savedPaths.map((path) => {
+        <>
+          <div className='parcours-search parcours-search--list'>
+            <svg
+              className='parcours-search-icon'
+              aria-hidden='true'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            >
+              <circle cx='11' cy='11' r='6.5' />
+              <line x1='20' y1='20' x2='16' y2='16' />
+            </svg>
+            <input
+              type='search'
+              className='parcours-search-input'
+              value={pathSearch}
+              onChange={(event) => setPathSearch(event.target.value)}
+              placeholder='Rechercher un parcours par nom ou catégorie...'
+              aria-label='Rechercher un parcours'
+            />
+            {pathSearch ? (
+              <button
+                type='button'
+                className='parcours-search-clear'
+                aria-label='Effacer la recherche'
+                onClick={() => setPathSearch('')}
+              >
+                ×
+              </button>
+            ) : null}
+          </div>
+          {filteredSavedPaths.length === 0 ? (
+            <div className='parcours-pane-empty'>
+              Aucun parcours ne correspond à « {pathSearch} ».
+            </div>
+          ) : (
+            <ul className='parcours-grid'>
+              {filteredSavedPaths.map((path) => {
             const pathCards = path.cardIds
               .map((id) => cards.find((card) => card.id === id))
               .filter((card): card is (typeof cards)[number] => Boolean(card));
@@ -317,7 +364,9 @@ export const MatchOrderSection = () => {
               </li>
             );
           })}
-        </ul>
+            </ul>
+          )}
+        </>
       )}
 
       {matchMessage ? <p className='status-message'>{matchMessage}</p> : null}

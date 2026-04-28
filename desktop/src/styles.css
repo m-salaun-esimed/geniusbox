@@ -887,6 +887,46 @@ textarea:focus-visible,
   font-size: 0.9rem;
 }
 
+.modal-alert ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.modal-alert--success {
+  border-color: #6fbf73;
+  background: rgba(111, 191, 115, 0.16);
+  color: #d6f0d8;
+}
+
+.ai-import-section {
+  margin-bottom: 0.9rem;
+}
+
+.ai-import-section h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.ai-import-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.ai-import-steps {
+  margin: 0 0 0.4rem;
+  padding-left: 1.2rem;
+  color: #cdd5e0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.ai-import-steps li {
+  margin-bottom: 0.15rem;
+}
+
 .game-shell {
   max-width: 1120px;
   margin: 0 auto;
@@ -1193,13 +1233,15 @@ textarea:focus-visible,
 }
 
 .score-temp {
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: 700;
-  padding: 0.1rem 0.4rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 999px;
   color: var(--bg);
   background: var(--accent-amber);
   letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 .game-side-panel-end {
@@ -1325,6 +1367,126 @@ textarea:focus-visible,
 .podium-list .podium-bronze {
   background: color-mix(in oklab, #c68b5d 24%, transparent);
   border: 1px solid color-mix(in oklab, #c68b5d 54%, transparent);
+}
+
+.match-outro-shell {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.match-outro-card {
+  width: min(560px, 96vw);
+  padding: 2.4rem 2rem 2rem;
+  border-radius: 22px;
+  text-align: center;
+  border: 1px solid color-mix(in oklab, var(--accent-amber) 50%, transparent);
+  background:
+    radial-gradient(
+      120% 120% at 50% -10%,
+      color-mix(in oklab, var(--accent-amber) 30%, transparent) 0%,
+      transparent 60%
+    ),
+    rgba(28, 24, 48, 0.98);
+  box-shadow:
+    0 30px 70px -22px rgba(0, 0, 0, 0.7),
+    0 0 0 1px color-mix(in oklab, var(--accent-amber) 28%, transparent),
+    0 0 100px -22px color-mix(in oklab, var(--accent-amber) 70%, transparent);
+  animation: matchOutroIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes matchOutroIn {
+  0% {
+    transform: scale(0.85) translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.match-outro-burst {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 1.1rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--accent-amber);
+  background: color-mix(in oklab, var(--accent-amber) 22%, transparent);
+  border: 2px solid color-mix(in oklab, var(--accent-amber) 60%, transparent);
+  box-shadow:
+    0 0 0 8px color-mix(in oklab, var(--accent-amber) 12%, transparent),
+    0 0 60px -10px color-mix(in oklab, var(--accent-amber) 70%, transparent);
+  animation: decisionBurst 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.match-outro-eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--accent-amber) 80%, var(--fg-muted));
+  font-weight: 700;
+}
+
+.match-outro-headline {
+  margin: 0 0 0.6rem;
+  font-size: 2.2rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  line-height: 1.1;
+}
+
+.match-outro-subline {
+  margin: 0 auto 1.4rem;
+  max-width: 420px;
+  font-size: 1rem;
+  color: var(--fg-muted);
+  line-height: 1.5;
+}
+
+.match-outro-score {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  margin: 0 auto 1.6rem;
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--surface-2) 80%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent-amber) 50%, transparent);
+}
+
+.match-outro-score-value {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.match-outro-score-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.match-outro-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.match-outro-cta {
+  min-width: 220px;
+  padding: 0.85rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .decision-box {
@@ -2996,6 +3158,11 @@ textarea:focus-visible,
 .parcours-search-clear:hover {
   background: color-mix(in oklab, var(--accent-rose) 25%, var(--surface-2));
   color: var(--fg);
+}
+
+.parcours-search--list {
+  margin: 0 0 1rem 0;
+  max-width: 480px;
 }
 
 /* ─── Flash card section ─── */
