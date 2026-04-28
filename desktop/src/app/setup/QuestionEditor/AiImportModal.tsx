@@ -1,7 +1,21 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { QuestionCard } from '../../../game-engine/types';
+import { QuestionCard, QuestionType } from '../../../game-engine/types';
 import { validateCardDetailed } from '../../../storage/questionPacks';
+import { QUESTION_TYPE_COLOR, QUESTION_TYPE_LABELS } from '../../questionTypeColors';
+
+const formatAnswer = (type: QuestionType, value: string): string => {
+  if (type === 'true_false') {
+    return value === 'true' ? 'Vrai' : value === 'false' ? 'Faux' : value;
+  }
+  if (type === 'ranking') {
+    return `Position ${value}`;
+  }
+  if (type === 'free_color') {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  return value;
+};
 
 const AI_PROMPT = `Tu es un assistant qui transforme la photo d'une carte de quiz Smart 10 en un objet JSON strictement importable.
 
@@ -186,10 +200,45 @@ export const AiImportModal = ({ isOpen, onClose, onSave, onCopyPrompt }: AiImpor
           </section>
 
           {verdict.kind === 'valid' ? (
-            <div className='modal-alert modal-alert--success'>
-              <strong>Carte valide.</strong> Titre : « {verdict.card.title} » — type :{' '}
-              {verdict.card.type}. Tu peux enregistrer.
-            </div>
+            <section className='ai-import-section ai-import-preview'>
+              <div className='ai-import-section-header'>
+                <h4>Aperçu de la carte</h4>
+                <span className='modal-alert--success-pill'>JSON valide</span>
+              </div>
+              <p className='counter-text'>
+                Vérifie le titre, le type et chaque réponse avant d'enregistrer.
+              </p>
+              <div
+                className='card-tile has-type-stripe ai-import-preview-tile'
+                style={{ ['--type-color' as string]: QUESTION_TYPE_COLOR[verdict.card.type].hex }}
+              >
+                <div className='card-tile-header'>
+                  <strong>{verdict.card.title}</strong>
+                  <span className='type-badge' title={QUESTION_TYPE_LABELS[verdict.card.type]}>
+                    <span className='type-badge-dot' aria-hidden='true' />
+                    {QUESTION_TYPE_LABELS[verdict.card.type]}
+                  </span>
+                </div>
+                {verdict.card.choices ? (
+                  <p className='counter-text ai-import-preview-choices'>
+                    Choix possibles : {verdict.card.choices.join(' • ')}
+                  </p>
+                ) : null}
+                <ol className='ai-import-preview-list'>
+                  {verdict.card.propositions.map((proposition, index) => (
+                    <li key={proposition.id}>
+                      <span className='ai-import-preview-text'>
+                        <span className='ai-import-preview-index'>{index + 1}.</span>
+                        {proposition.text}
+                      </span>
+                      <span className='ai-import-preview-answer'>
+                        {formatAnswer(verdict.card.type, proposition.correctAnswer)}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </section>
           ) : null}
           {verdict.kind === 'invalid' ? (
             <div className='modal-alert'>

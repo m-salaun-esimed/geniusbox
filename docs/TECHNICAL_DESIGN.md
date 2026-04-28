@@ -73,7 +73,8 @@ desktop/src/
 │   │   ├── QuestionTypeSelect.tsx     # Dropdown de sélection de type de carte
 │   │   ├── StepHeader.tsx             # En-tête d'étape de configuration
 │   │   ├── TypeLegendModal.tsx        # Modale légende des types de questions
-│   │   └── EndMatchConfirmModal.tsx   # Modale confirmation fin de partie
+│   │   ├── EndMatchConfirmModal.tsx   # Modale confirmation fin de partie
+│   │   └── CreditsModal.tsx           # Modale crédits / à propos
 │   ├── setup/
 │   │   ├── PlayersSection.tsx         # Étape 1 — Joueurs
 │   │   ├── FlashCardSection.tsx       # Sélection carte en mode Flash
@@ -84,11 +85,15 @@ desktop/src/
 │   │       ├── CardsGrid.tsx          # Grille des cartes existantes
 │   │       ├── CardEditorModal.tsx    # Modale création / édition d'une carte
 │   │       ├── ExportPanel.tsx        # Panel d'export JSON
-│   │       └── ImportPanel.tsx        # Panel d'import JSON
-│   └── game/
-│       ├── InRoundView.tsx            # Vue de jeu en cours de manche
-│       ├── RoundSummaryView.tsx       # Vue résumé de fin de manche
-│       └── FinishedView.tsx           # Vue classement final
+│   │       ├── ImportPanel.tsx        # Panel d'import JSON
+│   │       └── AiImportModal.tsx      # Modale d'import assistée par IA
+│   ├── game/
+│   │   ├── InRoundView.tsx            # Vue de jeu en cours de manche
+│   │   ├── RoundSummaryView.tsx       # Vue résumé de fin de manche
+│   │   ├── MatchOutroView.tsx         # Outro animé de fin de partie
+│   │   └── FinishedView.tsx           # Vue classement final
+│   └── utils/
+│       └── downloadJsonFile.ts        # Helper de téléchargement JSON
 ├── game-engine/
 │   ├── engine.ts                      # Moteur de jeu Vrai/Faux (utilisé en tests)
 │   └── types.ts                       # Types partagés (QuestionCard, QuestionType, etc.)
@@ -112,8 +117,12 @@ Le store centralise :
 
 ```
 setup → (startMatch) → in_round → (fin de carte) → round_summary
-                                                   → (fin de partie) → finished
+                                                   → (carte suivante) → in_round
+                                                   → (fin de partie)  → match_complete → finished
 ```
+
+- `match_complete` correspond à l'écran d'outro (`MatchOutroView`) joué juste avant le classement final.
+- `finished` correspond au classement final (`FinishedView`), atteint via `proceedToFinalRanking`.
 
 ### 4.2 Joueur dans une partie
 

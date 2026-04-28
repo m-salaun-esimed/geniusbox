@@ -20,7 +20,7 @@
 
 ```bash
 git clone <url-du-repo>
-cd geniusbox
+cd smart10
 npm install
 ```
 

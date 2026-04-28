@@ -57,15 +57,18 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 
 ### Conception des cartes
 
-- Quatre types de questions :
-  - Vrai / Faux
-  - Classement
-  - Choix multiple
-  - Réponse libre
+- Six types de questions :
+  - Vrai / Faux (`true_false`)
+  - Classement de 1 à 10 (`ranking`)
+  - Question fermée à 2 ou 3 réponses (`choice`)
+  - Réponse libre texte (`free_text`)
+  - Réponse libre numérique (`free_number`)
+  - Réponse libre couleur (`free_color`)
 - Contrainte métier : 10 propositions obligatoires par carte.
 - Paramétrage par carte :
-  - titre ;
+  - titre (unique, insensible à la casse) ;
   - type de question ;
+  - pour les cartes `choice` : la liste des choix (2 ou 3) ;
   - réponse attendue pour chaque proposition.
 
 ### Import / export et parcours
@@ -78,16 +81,16 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 
 ### Déroulement d'une partie
 
-- Démarrer une partie avec un ou plusieurs joueurs.
-- Choisir le parcours avant le lancement.
-- Définir un score cible ou jouer sans limite.
-- Régler un timer d'ambiance (15s, 30s ou 45s) pour le rythme de jeu.
+- Démarrer une partie avec un à dix joueurs.
+- Choisir un mode de jeu : **Flash** (une seule carte) ou **Parcours** (plusieurs cartes enchaînées avec objectif de points).
+- Définir un score cible (mode Parcours) ou jouer sans limite (mode Flash).
+- Régler un timer d'ambiance (15 s, 30 s ou 45 s) pour le rythme de jeu.
 - Répondre proposition par proposition.
 - Verrouiller les propositions déjà traitées.
 - Afficher un retour visuel immédiat (bonne/mauvaise réponse).
 - Capitaliser les points ou continuer la carte.
 - Suivre les scores en direct.
-- Afficher le classement final (égalité possible).
+- Afficher un écran d'outro de fin de partie puis le classement final (égalité possible).
 
 ## Flux utilisateur
 
@@ -97,34 +100,42 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 4. Jeu : réponses successives et mise à jour des scores.
 5. Résultats : classement final et fin de partie.
 
-## Choix technique : Electron
+## Choix technique : Electron + Capacitor
 
-Le choix d'Electron répond à l'objectif de simplicité de déploiement :
+Le choix d'Electron répond à l'objectif de simplicité de déploiement desktop :
 
 - application desktop native sur Windows, macOS et Linux ;
 - aucune infrastructure serveur obligatoire ;
 - persistance locale des données ;
 - base technologique web moderne (React + TypeScript).
 
+Capacitor est utilisé pour empaqueter le même renderer React sous forme d'application Android (WebView), avec un code métier mutualisé entre desktop et mobile.
+
 ## Stack technique
 
-- React
+- React 19
 - TypeScript
-- Zustand
-- Vite
-- Electron
-- Vitest
+- Zustand (état global)
+- Vite (bundler renderer)
+- Electron (shell desktop)
+- Capacitor (shell Android)
+- Vitest + jsdom (tests unitaires)
 
 ## Organisation du code
 
-- desktop/src/main.tsx : point d'entrée React.
-- desktop/src/app/App.tsx : orchestration des écrans.
-- desktop/src/app/store.ts : état global de la partie.
-- desktop/src/game-engine/engine.ts : règles et logique de jeu.
-- desktop/src/storage/questionPacks.ts : stockage des packs de questions.
-- desktop/electron/main.ts : processus principal Electron.
-- desktop/electron/preload.ts : couche de communication sécurisée.
-- desktop/tests/engine.test.ts : tests de logique métier.
+- `desktop/src/main.tsx` — point d'entrée React.
+- `desktop/src/app/App.tsx` — orchestration des écrans (setup → partie).
+- `desktop/src/app/store.ts` — état global Zustand et logique de partie.
+- `desktop/src/app/setup/` — étapes de configuration (joueurs, mode, éditeur de cartes, sélection du parcours).
+- `desktop/src/app/game/` — vues de partie (`InRoundView`, `RoundSummaryView`, `MatchOutroView`, `FinishedView`).
+- `desktop/src/app/components/` — composants UI partagés (sélecteurs, modales, crédits).
+- `desktop/src/game-engine/types.ts` — types partagés (`QuestionCard`, `QuestionType`, palette de couleurs).
+- `desktop/src/game-engine/engine.ts` — moteur historique Vrai/Faux (utilisé par les tests).
+- `desktop/src/storage/questionPacks.ts` — chargement, validation, persistence et import/export.
+- `desktop/electron/main.ts` — processus principal Electron.
+- `desktop/electron/preload.ts` — couche de communication sécurisée.
+- `desktop/tests/` — tests Vitest (`engine.test.ts`, `questionPacks.test.ts`, `questionTypeColors.test.ts`, `constants.test.ts`).
+- `android/` — projet natif Android généré par Capacitor.
 
 ## Exécution du projet
 

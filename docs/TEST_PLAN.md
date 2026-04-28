@@ -17,7 +17,8 @@
 1. Compose a parcours by selecting multiple cards.
 2. Reorder cards in the parcours and verify order is applied in game.
 3. Import another valid cards JSON.
-4. Verify card catalog is replaced and parcours selection is reset.
+4. Verify imported cards are added to the existing catalog (additive import) and that the current parcours selection is preserved.
+5. Save the parcours, reload the app, and verify the saved parcours can be restored.
 
 ## Installation smoke test
 1. Build installer with `npm run dist`.

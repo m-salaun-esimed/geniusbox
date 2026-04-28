@@ -7,19 +7,22 @@ Dans l'étape Cartes de l'application :
 1. Cliquer sur Créer une carte.
 2. Saisir un titre.
 3. Choisir le type de question :
-   - true_false
-   - ranking
-   - binary_choice
-   - free_text
+   - `true_false` — Vrai / Faux
+   - `ranking` — classement de 1 à 10
+   - `choice` — choix parmi 2 ou 3 réponses définies
+   - `free_text` — saisie texte libre
+   - `free_number` — saisie numérique
+   - `free_color` — sélection d'une couleur dans la palette
 4. Renseigner exactement 10 propositions.
 5. Renseigner la réponse attendue pour chaque proposition.
 6. Valider la carte.
 
 Règles de validation :
-- titre obligatoire ;
-- 10 propositions obligatoires ;
-- texte et réponse attendue obligatoires pour chaque proposition ;
-- unicité du titre de carte.
+- titre obligatoire et unique (insensible à la casse) ;
+- 10 propositions obligatoires, texte et réponse attendue renseignés ;
+- pour `choice` : 2 ou 3 valeurs de `choices` non vides ; chaque réponse attendue doit appartenir à `choices` ;
+- pour `free_number` : chaque réponse attendue doit être un nombre valide (la virgule décimale est acceptée) ;
+- pour `free_color` : chaque réponse attendue doit correspondre à un identifiant de la palette (`rouge`, `bleu`, `vert`, `jaune`, `orange`, `violet`, `rose`, `noir`, `blanc`, `gris`).
 
 ## 2. Export / import des cartes
 
