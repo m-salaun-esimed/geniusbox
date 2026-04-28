@@ -10,7 +10,11 @@
     "dev": "concurrently -k \"npm:dev:web\" \"npm:dev:electron\"",
     "build:web": "tsc --noEmit && vite build",
     "build:electron": "tsc -p tsconfig.electron.json && node -e \"require('node:fs').copyFileSync('desktop/electron/preload.cjs','dist-electron/preload.cjs')\"",
+    "cap:add:android": "npx cap add android",
+    "cap:sync:android": "npx cap sync android",
+    "build:apk": "npm run build:web && npm run cap:sync:android && cd android && ./gradlew assembleDebug",
     "build": "npm run build:web && npm run build:electron",
+    "build:all": "npm run build && npm run build:apk",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
@@ -19,17 +23,21 @@
   "keywords": [
     "smart10",
     "electron",
+    "capacitor",
     "react",
     "multiplayer"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.3.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^25.6.0",

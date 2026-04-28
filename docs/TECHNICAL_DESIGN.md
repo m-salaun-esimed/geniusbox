@@ -6,6 +6,7 @@ Ce document décrit la conception technique de Smart 10 dans son état actuel (s
 
 Périmètre couvert :
 - architecture desktop Electron + renderer React ;
+- packaging mobile Android via Capacitor sur le même build web ;
 - organisation des modules et composants ;
 - modèle de données du jeu ;
 - gestion d'état et logique métier ;
@@ -15,11 +16,13 @@ Périmètre couvert :
 
 ## 2. Architecture globale
 
-Smart 10 suit une architecture à 3 couches côté client desktop :
+Smart 10 suit une architecture à 3 couches côté client desktop, avec une couche de packaging mobile supplémentaire :
 
 1. **Processus principal Electron** (main process)
 2. **Couche bridge sécurisée** (preload)
 3. **Application React** (renderer)
+
+Le renderer React est construit une seule fois par Vite puis consommé par Electron et Capacitor. Les intégrations spécifiques restent isolées dans les couches de packaging.
 
 ### 2.1 Main process Electron
 
@@ -224,9 +227,13 @@ Pour `free_text`, une validation manuelle est proposée si la normalisation ne s
 | `npm run dev` | Vite + Electron en parallèle |
 | `npm run build` | Build renderer + compilation TS Electron |
 | `npm run dist` | Packaging electron-builder |
+| `npm run build:apk` | Build web + sync Capacitor + APK debug Android |
+| `npm run build:all` | Lance les deux chaînes Electron et Android |
 | `npm test` | Vitest (run once) |
 | `npm run test:watch` | Vitest en mode watch |
 | `npm run lint` | `tsc --noEmit` |
+
+Le build APK nécessite un environnement Java/Android SDK valide, en plus de Node.js.
 
 ### 8.2 Tests unitaires
 
@@ -245,7 +252,8 @@ Environnement jsdom (Vitest) — `localStorage` disponible nativement.
 
 - Bundler renderer : Vite (`vite.config.ts`, root `desktop`)
 - Compilation TS Electron : `tsconfig.electron.json`
-- Packaging : `electron-builder`
+- Packaging desktop : `electron-builder`
+- Packaging mobile : Capacitor (`capacitor.config.ts`, `android/`)
 
 ## 9. Sécurité et robustesse
 

@@ -45,11 +45,13 @@ Elle permet de créer des parcours, lancer des parties multi-joueurs, suivre les
 - Zustand (état global)
 - Vite (bundler)
 - Electron (packaging desktop)
+- Capacitor (packaging Android / APK)
 - Vitest (tests unitaires)
 
 ## Démarrage rapide
 
 Prérequis : **Node.js 20+** et npm.
+Pour le build APK Android, il faut aussi **Java** et l'outillage Android (Android Studio / SDK).
 
 ```bash
 npm install
@@ -61,7 +63,11 @@ Build et packaging :
 ```bash
 npm run build      # Compile le renderer et le process Electron
 npm run dist       # Génère l'installeur (dmg / exe / AppImage)
+npm run build:apk  # Génère l'APK Android via Capacitor
+npm run build:all  # Lance les deux chaînes de build
 ```
+
+Le renderer React est partagé par les deux cibles. Le build web alimente à la fois Electron et Capacitor, donc les changements UI / logique restent uniques.
 
 Tests :
 
