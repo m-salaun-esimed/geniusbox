@@ -2,8 +2,8 @@ import { createPortal } from 'react-dom';
 import nathanPhoto from '../../assets/credits/nathan.png';
 import axelPhoto from '../../assets/credits/axel_prison.png';
 import jeremyPhoto from '../../assets/credits/jeremy_jeu.png';
-import matheoPhoto from '../../assets/credits/matheo.jpg';
-import lucasPhoto from '../../assets/credits/lucas.jpg';
+import matheoPhoto from '../../assets/credits/matheo_2.png';
+import lucasPhoto from '../../assets/credits/lucas_2.png';
 import matthieuPhoto from '../../assets/credits/matthieu_cowboy.png';
 
 type CreditPerson = {
@@ -16,7 +16,7 @@ const CREDITS_PEOPLE: CreditPerson[] = [
   { name: 'Nathan Sabaty', photo: nathanPhoto, quote: 'je fais 2 3 bar mitzvah.' },
   { name: 'Axel Lapierre', photo: axelPhoto, quote: 'top goy.' },
   { name: 'Jeremy Mercklen', photo: jeremyPhoto, quote: 'Si je te fend le crane en deux quel oeil se fermera le premier.' },
-  { name: 'Matheo Bert', photo: matheoPhoto, quote: 'Orange is the new orange.' },
+  { name: 'Matheo Bert', photo: matheoPhoto, quote: 'DEMACIAAAAA.' },
   { name: 'Lucas Joly', photo: lucasPhoto, quote: 'psartek le degrade.' },
   { name: 'Matthieu Salaun', photo: matthieuPhoto, quote: 'A toi mon bébé à toi ma futur femme.' },
 ];
