@@ -12,11 +12,13 @@ import { InRoundView } from './game/InRoundView';
 import { RoundSummaryView } from './game/RoundSummaryView';
 import { FinishedView } from './game/FinishedView';
 import { MatchOutroView } from './game/MatchOutroView';
+import { CreditsModal } from './components/CreditsModal';
 
 export const App = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [setupError, setSetupError] = useState('');
   const [endMatchConfirmOpen, setEndMatchConfirmOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const { matchState, gameMode, startMatch, terminateMatch } = useAppStore();
   const sounds = useMemo(() => createSoundEffects(), []);
   const previousPhaseRef = useRef<string | null>(null);
@@ -58,12 +60,35 @@ export const App = () => {
     onAcceptEndMatch: acceptEndMatch,
   };
 
+  const creditsButton = (
+    <button
+      type='button'
+      className='credits-fab'
+      onClick={() => setCreditsOpen(true)}
+      aria-label='Crédits'
+    >
+      i
+    </button>
+  );
+
   if (matchState?.phase === 'in_round') {
-    return <InRoundView {...endMatchProps} />;
+    return (
+      <>
+        {creditsButton}
+        <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+        <InRoundView {...endMatchProps} />
+      </>
+    );
   }
 
   if (matchState?.phase === 'round_summary') {
-    return <RoundSummaryView {...endMatchProps} />;
+    return (
+      <>
+        {creditsButton}
+        <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+        <RoundSummaryView {...endMatchProps} />
+      </>
+    );
   }
 
   if (matchState?.phase === 'match_complete') {
@@ -71,70 +96,80 @@ export const App = () => {
   }
 
   if (matchState?.phase === 'finished') {
-    return <FinishedView onAcceptEndMatch={acceptEndMatch} />;
+    return (
+      <>
+        {creditsButton}
+        <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+        <FinishedView onAcceptEndMatch={acceptEndMatch} />
+      </>
+    );
   }
 
   return (
-    <main className='setup-main'>
-      <section className='editor-card setup-shell'>
-        <div className='setup-fixed-top'>
-          <header className='editor-header'>
-            <h1>GeniusBox</h1>
-            <p>Configuration de partie puis lancement.</p>
-          </header>
-          <StepHeader currentStep={currentStep} setCurrentStep={setCurrentStep} />
-        </div>
-        <div className='setup-scroll'>
-          <div className='editor-grid'>
-            {currentStep === 0 ? <PlayersSection /> : null}
-            {currentStep === 2 ? <GameModeSection /> : null}
-            {currentStep === 2 && gameMode === 'flash' ? <FlashCardSection /> : null}
-            {currentStep === 2 && gameMode === 'parcours' ? <MatchOrderSection /> : null}
-            <QuestionEditor currentStep={currentStep} />
+    <>
+      {creditsButton}
+      <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+      <main className='setup-main'>
+        <section className='editor-card setup-shell'>
+          <div className='setup-fixed-top'>
+            <header className='editor-header'>
+              <h1>GeniusBox</h1>
+              <p>Configuration de partie puis lancement.</p>
+            </header>
+            <StepHeader currentStep={currentStep} setCurrentStep={setCurrentStep} />
           </div>
-        </div>
-        <div className='wizard-actions'>
-          {setupError ? <p className='status-message status-error'>{setupError}</p> : null}
-          <button
-            type='button'
-            disabled={currentStep === 0}
-            onClick={() => {
-              sounds.navigate();
-              setSetupError('');
-              setCurrentStep((prev) => prev - 1);
-            }}
-          >
-            Étape précédente
-          </button>
-          <button
-            type='button'
-            className='primary-button'
-            onClick={() => {
-              if (currentStep === 2 && gameMode === null) {
-                sounds.wrong();
-                setSetupError('Choisis un mode de jeu pour continuer.');
-                return;
-              }
-              if (currentStep === STEPS.length - 1) {
-                const error = startMatch();
-                if (error) {
+          <div className='setup-scroll'>
+            <div className='editor-grid'>
+              {currentStep === 0 ? <PlayersSection /> : null}
+              {currentStep === 2 ? <GameModeSection /> : null}
+              {currentStep === 2 && gameMode === 'flash' ? <FlashCardSection /> : null}
+              {currentStep === 2 && gameMode === 'parcours' ? <MatchOrderSection /> : null}
+              <QuestionEditor currentStep={currentStep} />
+            </div>
+          </div>
+          <div className='wizard-actions'>
+            {setupError ? <p className='status-message status-error'>{setupError}</p> : null}
+            <button
+              type='button'
+              disabled={currentStep === 0}
+              onClick={() => {
+                sounds.navigate();
+                setSetupError('');
+                setCurrentStep((prev) => prev - 1);
+              }}
+            >
+              Étape précédente
+            </button>
+            <button
+              type='button'
+              className='primary-button'
+              onClick={() => {
+                if (currentStep === 2 && gameMode === null) {
                   sounds.wrong();
-                  setSetupError(error);
+                  setSetupError('Choisis un mode de jeu pour continuer.');
+                  return;
+                }
+                if (currentStep === STEPS.length - 1) {
+                  const error = startMatch();
+                  if (error) {
+                    sounds.wrong();
+                    setSetupError(error);
+                    return;
+                  }
+                  sounds.navigate();
+                  setSetupError('');
                   return;
                 }
                 sounds.navigate();
                 setSetupError('');
-                return;
-              }
-              sounds.navigate();
-              setSetupError('');
-              setCurrentStep((prev) => prev + 1);
-            }}
-          >
-            {currentStep === STEPS.length - 1 ? 'Lancer la partie' : 'Étape suivante'}
-          </button>
-        </div>
-      </section>
-    </main>
+                setCurrentStep((prev) => prev + 1);
+              }}
+            >
+              {currentStep === STEPS.length - 1 ? 'Lancer la partie' : 'Étape suivante'}
+            </button>
+          </div>
+        </section>
+      </main>
+    </>
   );
 };
