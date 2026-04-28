@@ -2,8 +2,8 @@ import { createPortal } from 'react-dom';
 import nathanPhoto from '../../assets/credits/nathan.png';
 import axelPhoto from '../../assets/credits/axel_prison.png';
 import jeremyPhoto from '../../assets/credits/jeremy_jeu.png';
-import matheoPhoto from '../../assets/credits/matheo.jpg';
-import lucasPhoto from '../../assets/credits/lucas.jpg';
+import matheoPhoto from '../../assets/credits/matheo_2.png';
+import lucasPhoto from '../../assets/credits/lucas_2.png';
 import matthieuPhoto from '../../assets/credits/matthieu_cowboy.png';
 
 type CreditPerson = {

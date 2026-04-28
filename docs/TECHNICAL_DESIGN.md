@@ -1,8 +1,8 @@
-# Smart 10 — Conception Technique
+# GeniusBox — Conception Technique
 
 ## 1. Objectif et périmètre
 
-Ce document décrit la conception technique de Smart 10 dans son état actuel (sprint 4).
+Ce document décrit la conception technique de GeniusBox dans son état actuel (sprint 5).
 
 Périmètre couvert :
 - architecture desktop Electron + renderer React ;
@@ -73,7 +73,8 @@ desktop/src/
 │   │   ├── QuestionTypeSelect.tsx     # Dropdown de sélection de type de carte
 │   │   ├── StepHeader.tsx             # En-tête d'étape de configuration
 │   │   ├── TypeLegendModal.tsx        # Modale légende des types de questions
-│   │   └── EndMatchConfirmModal.tsx   # Modale confirmation fin de partie
+│   │   ├── EndMatchConfirmModal.tsx   # Modale confirmation fin de partie
+│   │   └── CreditsModal.tsx           # Modale crédits équipe + technologies (bouton i fixe)
 │   ├── setup/
 │   │   ├── PlayersSection.tsx         # Étape 1 — Joueurs
 │   │   ├── FlashCardSection.tsx       # Sélection carte en mode Flash
@@ -89,6 +90,8 @@ desktop/src/
 │       ├── InRoundView.tsx            # Vue de jeu en cours de manche
 │       ├── RoundSummaryView.tsx       # Vue résumé de fin de manche
 │       └── FinishedView.tsx           # Vue classement final
+├── assets/
+│   └── credits/                       # Photos des membres de l'équipe (PNG/JPG)
 ├── game-engine/
 │   ├── engine.ts                      # Moteur de jeu Vrai/Faux (utilisé en tests)
 │   └── types.ts                       # Types partagés (QuestionCard, QuestionType, etc.)
@@ -267,20 +270,38 @@ Points de vigilance :
 - Les données persistent en `localStorage` (non chiffré).
 - Absence de versionnement explicite des schémas de données.
 
-## 10. Dette technique identifiée
+## 10. Composant crédits
+
+### 10.1 Bouton fixe
+
+Un bouton « i » (`credits-fab`) est rendu en `position: fixed; top: 1rem; left: 1rem; z-index: 100` directement dans `App.tsx`, avant chaque vue (`InRoundView`, `RoundSummaryView`, `FinishedView`, setup). Il est donc visible sur toutes les pages sans duplication de logique dans les vues enfants.
+
+### 10.2 Modal crédits (`CreditsModal.tsx`)
+
+Rendu via `createPortal` dans `document.body`. Contient :
+- en-tête : logo GB, titre GeniusBox, sous-titre, mention initiative Thierry Secqueville / Esimed 2026 ;
+- grille 3×2 de cartes membres (photo importée depuis `assets/credits/`, nom, citation) ;
+- pills technologies ;
+- bouton ✕ absolu en haut à droite.
+
+Responsive mobile : `max-height: 92dvh`, scroll interne, et bottom-sheet (100vw, border-radius 0) sous 480 px via `@media`.
+
+Les photos sont importées statiquement (imports Vite) — Vite les hash et copie dans `dist/assets/` au build.
+
+## 11. Dette technique identifiée
 
 1. Duplication de logique entre le moteur historique (`engine.ts`) et la logique de partie du store.
 2. Couverture de tests insuffisante sur le flux réel multi-types (store Zustand).
 3. Dépendance forte à la logique du store (peu de séparation service / métier).
 
-## 11. Recommandations d'évolution
+## 12. Recommandations d'évolution
 
 1. Isoler un moteur unique (pur, sans Zustand) utilisé à la fois par le store et les tests.
 2. Ajouter des tests d'intégration du store (phases, scoring, élimination, fins de manche).
 3. Introduire un schéma versionné pour l'import / export des cartes.
 4. Ajouter une couche de persistance abstraite pour préparer une option de stockage fichier / DB.
 
-## 12. Références
+## 13. Références
 
 - Règles fonctionnelles : [docs/GAME_RULES.md](GAME_RULES.md)
 - Création de cartes : [docs/QUESTION_AUTHORING.md](QUESTION_AUTHORING.md)

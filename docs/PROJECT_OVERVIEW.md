@@ -1,9 +1,9 @@
-# Smart 10 - Documentation Projet Complète
+# GeniusBox - Documentation Projet Complète
 
 ## Vision du projet
 
-Smart 10 est une application desktop de quiz et de jeu de parcours, inspirée du format « 10 propositions ».
-Le projet a été conçu dans un cadre pédagogique pour apprendre à travailler en Agile, avec des itérations courtes, un backlog priorisé et des livraisons fréquentes.
+GeniusBox est une application desktop (et Android) de quiz et de jeu de parcours, inspirée du format « 10 propositions ».
+Le projet est une **initiative ludo-pédagogique proposée par Thierry Secqueville — Esimed 2026**, conçue pour apprendre à travailler en Agile, avec des itérations courtes, un backlog priorisé et des livraisons fréquentes.
 
 L'objectif est double :
 - proposer une expérience de jeu multi-joueurs claire et engageante ;
@@ -15,11 +15,12 @@ L'objectif est double :
 
 | Rôle | Nom | Responsabilités |
 |------|------|------------------|
-| Product Owner | Mathéo | Définition des besoins, priorisation du backlog, validation des itérations |
-| Scrum Master | Jérémy | Animation des cérémonies, suppression des obstacles, respect du processus Agile |
-| Développeur & Gestion des Sprints | Nathan | Architecture, implémentation, coordination des sprints |
-| Développeur | Axel | Implémentation des fonctionnalités, tests |
-| Développeur & UX/UI | Matthieu | Implémentation, design d'interface, ergonomie |
+| Product Owner | Mathéo Bert | Définition des besoins, priorisation du backlog, validation des itérations |
+| Scrum Master | Jérémy Mercklen | Animation des cérémonies, suppression des obstacles, respect du processus Agile |
+| Développeur & Gestion des Sprints | Nathan Sabaty | Architecture, implémentation, coordination des sprints |
+| Développeur | Axel Lapierre | Implémentation des fonctionnalités, build Android (Capacitor) |
+| Développeur & UX/UI | Matthieu Salaun | Implémentation, design d'interface, ergonomie |
+| Développeur | Lucas Joly | Refactoring composants jeu, gestion des phases et styles |
 
 ### Cadence des sprints
 
@@ -46,6 +47,12 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 - IA : assistance au prototypage et à l'implémentation, avec validation humaine.
 
 ## Fonctionnalités de l'application
+
+### Page crédits
+
+- Bouton « i » fixe en haut à gauche, visible sur toutes les pages (setup, jeu, résumé, fin de partie).
+- Ouvre une modale crédits avec : logo GeniusBox, mention de l'initiative Thierry Secqueville / Esimed 2026, 6 cartes membres d'équipe (photo, nom, citation), section technologies.
+- Modale responsive : scrollable, bouton ✕, affichage bottom-sheet sur mobile.
 
 ### Gestion des parcours
 
@@ -97,14 +104,20 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 4. Jeu : réponses successives et mise à jour des scores.
 5. Résultats : classement final et fin de partie.
 
-## Choix technique : Electron
+## Choix technique : Electron + Android
 
-Le choix d'Electron répond à l'objectif de simplicité de déploiement :
+L'application cible deux plateformes :
 
-- application desktop native sur Windows, macOS et Linux ;
+**Desktop (Electron)** :
+- application native sur Windows, macOS et Linux ;
 - aucune infrastructure serveur obligatoire ;
 - persistance locale des données ;
 - base technologique web moderne (React + TypeScript).
+
+**Android (Capacitor)** :
+- le même renderer React est embarqué dans une WebView Android via Capacitor ;
+- le build web (`dist/`) est synchronisé dans le projet natif Android (`android/`) ;
+- génération d'un APK depuis Android Studio.
 
 ## Stack technique
 
@@ -113,6 +126,7 @@ Le choix d'Electron répond à l'objectif de simplicité de déploiement :
 - Zustand
 - Vite
 - Electron
+- Capacitor (Android)
 - Vitest
 
 ## Organisation du code
