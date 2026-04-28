@@ -16,7 +16,7 @@ const CREDITS_PEOPLE: CreditPerson[] = [
   { name: 'Nathan Sabaty', photo: nathanPhoto, quote: 'je fais 2 3 bar mitzvah.' },
   { name: 'Axel Lapierre', photo: axelPhoto, quote: 'top goy.' },
   { name: 'Jeremy Mercklen', photo: jeremyPhoto, quote: 'Si je te fend le crane en deux quel oeil se fermera le premier.' },
-  { name: 'Matheo Bert', photo: matheoPhoto, quote: 'Orange is the new orange.' },
+  { name: 'Matheo Bert', photo: matheoPhoto, quote: 'DEMACIAAAAA.' },
   { name: 'Lucas Joly', photo: lucasPhoto, quote: 'psartek le degrade.' },
   { name: 'Matthieu Salaun', photo: matthieuPhoto, quote: 'A toi mon bébé à toi ma futur femme.' },
 ];
