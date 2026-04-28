@@ -1,54 +1,74 @@
-# Smart 10 - Règles fonctionnelles
+# Smart 10 — Règles fonctionnelles
 
 ## 1. Préparation de partie
 
-- 1 à 10 joueurs peuvent être configurés.
-- Un objectif de points est défini avant le lancement.
-- Un timer d'ambiance est configurable (15s, 30s, 45s).
-- Le parcours est construit en sélectionnant des cartes dans l'étape Parcours.
-- L'ordre des cartes est modifiable avant démarrage.
+- 1 à 10 joueurs peuvent être configurés (minimum 1 nom).
+- Un **mode de jeu** est choisi avant le lancement :
+  - **Flash** — une seule carte jouée, idéal pour une démonstration ou une partie éclair.
+  - **Parcours** — plusieurs cartes enchaînées ; un objectif de points est défini.
+- Un **timer d'ambiance** est configurable : 15 s, 30 s ou 45 s.
+- Le parcours est constitué en sélectionnant des cartes depuis l'éditeur.
+- L'ordre des cartes est modifiable par glisser-déposer avant le démarrage.
+- Des parcours peuvent être sauvegardés, chargés, mis à jour ou supprimés.
 
 ## 2. Modèle de carte
 
-- Une carte contient exactement 10 propositions.
-- Types de carte pris en charge :
-	- Vrai / Faux
-	- Classement
-	- Choix multiple binaire (Homme/Femme)
-	- Réponse libre
+- Une carte contient **exactement 10 propositions**.
+- Chaque proposition possède un texte et une réponse attendue.
+- **Types de carte pris en charge** :
+
+| Type | Identifiant | Description |
+|---|---|---|
+| Vrai / Faux | `true_false` | Le joueur répond Vrai ou Faux. |
+| Classement | `ranking` | Le joueur place une réponse de 1 à 10. |
+| Question fermée | `choice` | Le joueur choisit parmi 2 ou 3 réponses définies. |
+| Réponse libre (texte) | `free_text` | Le joueur saisit une réponse textuelle. |
+| Réponse libre (nombre) | `free_number` | Le joueur saisit un nombre. |
+| Réponse libre (couleur) | `free_color` | Le joueur sélectionne une couleur dans la palette. |
 
 ## 3. Déroulement d'un tour
 
-1. Le joueur actif sélectionne une proposition non révélée.
-2. Le joueur répond selon le type de la carte.
-3. Si la réponse est correcte :
-	 - +1 point temporaire ;
-	 - choix entre capitaliser ou continuer.
-4. Si la réponse est incorrecte :
-	 - points temporaires remis à 0 ;
-	 - joueur éliminé pour la carte ;
-	 - passage au joueur actif suivant.
+1. Le joueur actif sélectionne une proposition non encore révélée.
+2. Il répond selon le type de la carte.
+3. **Si la réponse est correcte** :
+   - +1 point temporaire.
+   - Le joueur choisit : **Capitaliser** (sécuriser les points) ou **Risquer** (continuer sur la même carte).
+4. **Si la réponse est incorrecte** :
+   - Points temporaires remis à zéro.
+   - Joueur éliminé pour la carte en cours.
+   - Passage au joueur actif suivant.
 
-## 4. Règles de score
+## 4. Cas particulier — Réponse libre (texte)
 
-- Bonne réponse : +1 point temporaire.
-- Capitalisation : transfert des points temporaires vers le score total.
-- Mauvaise réponse : perte des points temporaires du tour en cours.
+- La comparaison est normalisée : accents supprimés, minuscules, espaces rognés.
+- En cas de non-correspondance, une **validation manuelle** est proposée à l'animateur :
+  - *Accepter quand même* → la réponse est comptée correcte.
+  - *Compter faux* → le joueur perd ses points temporaires et est éliminé.
 
-## 5. Fin de carte et fin de partie
+## 5. Règles de score
 
-- Fin de carte :
-	- toutes les propositions ont été révélées, ou
-	- il n'y a plus de joueur actif.
-- Fin de partie :
-	- un joueur atteint l'objectif de points, ou
-	- la dernière carte du parcours est terminée.
-- En cas d'égalité, plusieurs gagnants sont possibles.
+| Événement | Effet |
+|---|---|
+| Bonne réponse | +1 point temporaire |
+| Capitaliser | Points temporaires → score total ; joueur arrêté pour la carte |
+| Mauvaise réponse | Points temporaires perdus ; joueur éliminé |
+| Fin de carte (joueurs actifs restants) | Points temporaires transférés automatiquement au score total |
 
-## 6. Import / export et parcours
+## 6. Fin de carte et fin de partie
 
-- Export : l'utilisateur peut exporter tout ou partie des cartes au format JSON.
-- Import : un JSON valide ajoute des cartes au catalogue existant.
-- Le parcours est choisi au lancement en sélectionnant les cartes à jouer.
-- Les parcours sont sauvegardables localement (création, mise à jour, suppression).
-- Le JSON d'export/import concerne les cartes, pas les parcours sauvegardés.
+**Fin de carte** — l'une des conditions suivantes :
+- Toutes les propositions ont été révélées.
+- Il n'y a plus de joueur actif (tous arrêtés ou éliminés).
+
+**Fin de partie** — l'une des conditions suivantes :
+- Un joueur atteint ou dépasse l'objectif de points (mode Parcours).
+- Le parcours est entièrement joué.
+
+En cas d'égalité, **plusieurs gagnants** sont possibles (podium partagé).
+
+## 7. Import / Export et parcours
+
+- **Export** : tout ou partie des cartes exportées au format JSON.
+- **Import** : un fichier JSON valide ajoute des cartes au catalogue existant (additif).
+- Le JSON porte sur les **cartes** (catalogue), pas sur les parcours sauvegardés.
+- Les parcours sauvegardés sont stockés localement et peuvent être rechargés à tout moment.

@@ -1,28 +1,29 @@
-# Smart 10 - Conception Technique
+# Smart 10 — Conception Technique
 
 ## 1. Objectif et périmètre
 
-Ce document décrit la conception technique de Smart 10 dans son état actuel.
+Ce document décrit la conception technique de Smart 10 dans son état actuel (sprint 4).
 
 Périmètre couvert :
 - architecture desktop Electron + renderer React ;
+- organisation des modules et composants ;
 - modèle de données du jeu ;
 - gestion d'état et logique métier ;
-- persistance locale des cartes ;
-- pipeline build/test ;
-- points de vigilance techniques.
+- persistance locale des cartes et des parcours ;
+- pipeline build / test ;
+- dette technique et recommandations.
 
 ## 2. Architecture globale
 
 Smart 10 suit une architecture à 3 couches côté client desktop :
 
-1. Processus principal Electron (main process)
-2. Couche bridge sécurisée (preload)
-3. Application React (renderer)
+1. **Processus principal Electron** (main process)
+2. **Couche bridge sécurisée** (preload)
+3. **Application React** (renderer)
 
 ### 2.1 Main process Electron
 
-Fichier principal : `desktop/electron/main.ts`
+Fichier : `desktop/electron/main.ts`
 
 Responsabilités :
 - création de la fenêtre (`BrowserWindow`) ;
@@ -30,7 +31,7 @@ Responsabilités :
 - chargement du fichier statique `dist/index.html` en production ;
 - cycle de vie applicatif standard (macOS activation, quit hors macOS).
 
-Contraintes de sécurité appliquées :
+Contraintes de sécurité :
 - `contextIsolation: true`
 - `nodeIntegration: false`
 - preload dédié.
@@ -39,213 +40,241 @@ Contraintes de sécurité appliquées :
 
 Fichier : `desktop/electron/preload.ts`
 
-Responsabilité actuelle :
-- exposition minimale d'un objet global `window.smart10` avec la version applicative.
-
-Le preload reste volontairement faible pour limiter la surface d'attaque entre renderer et APIs Node/Electron.
+Exposition minimale d'un objet global `window.smart10` avec la version applicative.
+Le preload reste volontairement faible pour limiter la surface d'attaque.
 
 ### 2.3 Renderer React
 
 Point d'entrée : `desktop/src/main.tsx`
 
 Cœur applicatif :
-- `desktop/src/app/App.tsx` pour l'UI et les flux utilisateur ;
-- `desktop/src/app/store.ts` pour l'état global et les transitions métier.
+- `desktop/src/app/App.tsx` — orchestrateur des flux setup et partie ;
+- `desktop/src/app/store.ts` — état global et transitions métier (Zustand).
 
 ## 3. Organisation des modules
 
-### 3.1 UI et orchestration
+```
+desktop/src/
+├── app/
+│   ├── App.tsx                        # Orchestrateur principal
+│   ├── store.ts                       # Store Zustand (état + actions)
+│   ├── constants.ts                   # Constantes UI (types par défaut, étapes)
+│   ├── questionTypeColors.ts          # Labels, descriptions et couleurs par type
+│   ├── soundEffects.ts                # Effets sonores
+│   ├── confirmModal.tsx               # Modale de confirmation générique
+│   ├── components/
+│   │   ├── ColorSelect.tsx            # Sélecteur de couleur (palette)
+│   │   ├── QuestionTypeSelect.tsx     # Dropdown de sélection de type de carte
+│   │   ├── StepHeader.tsx             # En-tête d'étape de configuration
+│   │   ├── TypeLegendModal.tsx        # Modale légende des types de questions
+│   │   └── EndMatchConfirmModal.tsx   # Modale confirmation fin de partie
+│   ├── setup/
+│   │   ├── PlayersSection.tsx         # Étape 1 — Joueurs
+│   │   ├── FlashCardSection.tsx       # Sélection carte en mode Flash
+│   │   ├── GameModeSection.tsx        # Sélection du mode (Flash / Parcours)
+│   │   ├── MatchOrderSection.tsx      # Étape 4 — Sélection et ordre du parcours
+│   │   └── QuestionEditor/
+│   │       ├── index.tsx              # Étape 2 — Éditeur de cartes
+│   │       ├── CardsGrid.tsx          # Grille des cartes existantes
+│   │       ├── CardEditorModal.tsx    # Modale création / édition d'une carte
+│   │       ├── ExportPanel.tsx        # Panel d'export JSON
+│   │       └── ImportPanel.tsx        # Panel d'import JSON
+│   └── game/
+│       ├── InRoundView.tsx            # Vue de jeu en cours de manche
+│       ├── RoundSummaryView.tsx       # Vue résumé de fin de manche
+│       └── FinishedView.tsx           # Vue classement final
+├── game-engine/
+│   ├── engine.ts                      # Moteur de jeu Vrai/Faux (utilisé en tests)
+│   └── types.ts                       # Types partagés (QuestionCard, QuestionType, etc.)
+├── storage/
+│   └── questionPacks.ts               # Chargement, validation, persistence, import/export
+└── data/
+    └── questions/
+        └── sample-pack.json           # Pack de cartes par défaut
+```
 
-- `desktop/src/app/App.tsx`
+## 4. Gestion d'état (Zustand)
 
-Rôles :
-- parcours de configuration en 3 étapes : joueurs, cartes, parcours ;
-- affichage des phases de partie : `in_round`, `round_summary`, `finished` ;
-- interactions de jeu (sélection proposition, réponse, décisions de risque/capitalisation) ;
-- feedback utilisateur (modales, états visuels, effets sonores).
-
-### 3.2 Gestion d'état métier (Zustand)
-
-- `desktop/src/app/store.ts`
+Fichier : `desktop/src/app/store.ts`
 
 Le store centralise :
-- la configuration de partie (`setupPlayers`, `targetPointsToWin`, `timerSeconds`, sélection des cartes) ;
-- l'état dynamique d'une partie (`matchState`) ;
-- les commandes de transition (start, réponse, arrêt, continuation, fin de manche).
+- la configuration de partie (`setupPlayers`, `targetPointsToWin`, `gameMode`, sélection des cartes) ;
+- les cartes et les parcours sauvegardés ;
+- l'état dynamique d'une partie (`matchState`).
 
-Le timer est un timer d'ambiance affiché en partie (15, 30 ou 45 secondes), réinitialisé au changement de joueur/carte.
+### 4.1 Phases de partie
 
-Le modèle est orienté machine à états avec phases explicites :
-- `in_round`
-- `round_summary`
-- `finished`
+```
+setup → (startMatch) → in_round → (fin de carte) → round_summary
+                                                   → (fin de partie) → finished
+```
 
-### 3.3 Logique de jeu
+### 4.2 Joueur dans une partie
 
-Deux niveaux coexistent :
+Chaque `MatchPlayer` possède :
+- `totalScore` — points capitalisés ;
+- `tempScore` — points en cours de tour, perdus en cas de mauvaise réponse ;
+- `status` — `"active"` | `"stopped"` | `"eliminated"` (réinitialisé à chaque carte).
 
-1. Logique active de la partie dans `store.ts`
-2. Moteur isolé dans `desktop/src/game-engine/engine.ts` (principalement utilisé par les tests unitaires actuels)
+### 4.3 Modes de jeu
 
-Important : le moteur `engine.ts` implémente un flux "Vrai/Faux" historique (`GameState`, `TfQuestion`) alors que la production gère plusieurs types (`true_false`, `ranking`, `binary_choice`, `free_text`) via le store.
+| Mode | Comportement |
+|---|---|
+| `flash` | Une seule carte jouée ; `targetPointsToWin = MAX_SAFE_INTEGER` |
+| `parcours` | Toutes les cartes sélectionnées ; objectif de points configurable |
 
-### 3.4 Stockage local et import/export
-
-- `desktop/src/storage/questionPacks.ts`
-
-Fonctions clés :
-- chargement des cartes depuis `localStorage` (clé `smart10.cards`) ;
-- création/validation de cartes ;
-- export JSON complet ;
-- import JSON avec filtrage des entrées invalides ;
-- fallback sur un pack par défaut (`sample-pack.json`) ;
-- migration legacy depuis un ancien format de questions plates.
-
-### 3.5 Choix des cartes et parcours de partie
-
-Le parcours de partie est un ordre de cartes conservé dans l'état applicatif :
-
-- `selectedCardIdsForMatch` stocke la sélection ordonnée ;
-- ajout/retrait/réordonnancement via les actions du store ;
-- construction du parcours effectif au `startMatch()`.
-
-Important :
-
-- l'export JSON porte sur les cartes (catalogue), pas sur le parcours de partie ;
-- l'import de cartes est additif (les cartes importées sont ajoutées au catalogue).
-
-### 3.6 Parcours sauvegardés
-
-Les parcours sont persistés localement via `smart10.paths` :
-
-- structure `SavedPath` : `id`, `name`, `category`, `cardIds` ;
-- création/mise à jour/suppression depuis l'étape Parcours ;
-- chargement et réutilisation des parcours existants dans la configuration de partie.
-
-## 4. Modèle de données
+## 5. Modèle de données
 
 Source : `desktop/src/game-engine/types.ts`
 
-Types principaux :
-- `QuestionType` : `true_false | ranking | binary_choice | free_text`
-- `QuestionCard` : carte de jeu avec 10 propositions
-- `QuestionProposition` : item individuel (texte + réponse attendue)
+### 5.1 Types de questions
 
-Modèle de match (défini dans le store) :
-- joueurs avec score total, score temporaire et statut (`active`, `stopped`, `eliminated`) ;
-- carte courante, joueur courant, propositions révélées ;
-- états transitoires : décision après bonne réponse, feedback erreur, validation manuelle de réponse libre.
+```typescript
+type QuestionType =
+  | "true_false"
+  | "ranking"
+  | "choice"
+  | "free_text"
+  | "free_number"
+  | "free_color";
+```
 
-## 5. Règles métier implémentées
+### 5.2 Carte
 
-### 5.1 Contraintes de création/édition de carte
+```typescript
+interface QuestionCard {
+  id: string;
+  title: string;
+  type: QuestionType;
+  choices?: string[];        // uniquement pour "choice" (2 ou 3 éléments)
+  propositions: QuestionProposition[];  // exactement 10
+}
 
-- titre obligatoire ;
-- exactement 10 propositions ;
-- texte et réponse attendue obligatoires pour chaque proposition ;
-- unicité du titre (insensible à la casse) à la création/mise à jour.
+interface QuestionProposition {
+  id: string;
+  text: string;
+  correctAnswer: string;
+}
+```
 
-### 5.2 Déroulement d'un tour
+### 5.3 Palette de couleurs
 
-1. Le joueur actif sélectionne une proposition non révélée.
-2. Il fournit une réponse selon le type de question.
-3. Si la réponse est correcte :
-   - +1 point temporaire ;
-   - choix entre capitaliser (`secureAndStopTurn`) ou continuer (`riskAndContinueTurn`).
-4. Si la réponse est incorrecte :
-   - perte des points temporaires ;
-   - joueur éliminé pour la carte ;
-   - passage au joueur actif suivant.
+Définie dans `types.ts` (constante `COLOR_PALETTE`) : 10 couleurs avec id, label et hex.
+Utilisée par le type `free_color`.
 
-### 5.3 Cas spécifique : réponse libre
+### 5.4 Parcours sauvegardé
 
-Pour `free_text`, la comparaison automatique normalise les chaînes :
-- suppression des accents ;
-- passage en minuscules ;
-- trim.
+```typescript
+interface SavedPath {
+  id: string;
+  name: string;
+  category: string;
+  cardIds: string[];
+}
+```
 
-En cas de non-correspondance, une validation manuelle est proposée :
-- accepter quand même ;
-- compter faux.
+Persisté sous la clé `smart10.paths` dans `localStorage`.
 
-### 5.4 Fin de carte / fin de partie
+## 6. Stockage local
 
-- fin de carte si toutes les propositions sont révélées ou s'il n'y a plus de joueur actif ;
-- fin de partie si un joueur atteint l'objectif de points ou si le parcours est terminé ;
-- gestion des égalités via `winnerIds` multiples.
+| Clé localStorage | Contenu |
+|---|---|
+| `smart10.cards` | Tableau de `QuestionCard[]` |
+| `smart10.paths` | Tableau de `SavedPath[]` |
 
-## 6. Flux applicatif
+Validation à la lecture : les entrées invalides sont filtrées silencieusement.
+Fallback sur le pack d'exemple (`sample-pack.json`) si aucune carte valide n'est trouvée.
 
-### 6.1 Initialisation
+Migration legacy : un ancien format de questions plates (10 `TfQuestion`) est détecté et converti automatiquement en une `QuestionCard` de type `true_false`.
 
-- chargement des cartes via `loadCards()` ;
-- initialisation des options de setup ;
-- en dev, démarrage Vite + Electron via scripts concurrents.
+## 7. Règles métier implémentées
 
-### 6.2 Lancement d'une partie
+### 7.1 Contraintes de création / édition de carte
 
-- constitution du parcours ordonné selon la sélection utilisateur ;
-- instanciation des joueurs ;
-- création d'un `matchState` en phase `in_round`.
+- Titre obligatoire (unique, insensible à la casse).
+- Exactement 10 propositions, toutes renseignées.
+- Pour `choice` : 2 ou 3 choix définis ; chaque réponse attendue doit être dans les choix.
+- Pour `free_number` : chaque réponse attendue doit être un nombre valide.
+- Pour `free_color` : chaque réponse attendue doit être un id de la palette.
 
-### 6.3 Avancement de manche
+### 7.2 Comparaison des réponses
 
-- mise à jour atomique du store à chaque action ;
-- résolution de fin de manche via `resolveRoundIfEnded()` ;
-- transition de phase (`in_round` -> `round_summary` -> `in_round` ou `finished`).
+| Type | Logique de comparaison |
+|---|---|
+| `true_false`, `ranking`, `choice` | Égalité stricte de chaînes |
+| `free_text` | Normalisation : suppression accents, minuscules, trim |
+| `free_number` | Parsing décimal (virgule acceptée) + égalité numérique |
+| `free_color` | Normalisation identique à `free_text` |
 
-## 7. Build, tests et qualité
+Pour `free_text`, une validation manuelle est proposée si la normalisation ne suffit pas.
 
-### 7.1 Outils
+### 7.3 Fin de carte / fin de partie
 
-- bundling renderer : Vite (`vite.config.ts`, root `desktop`) ;
-- compilation TS Electron : `tsconfig.electron.json` ;
-- packaging : `electron-builder`.
+- Fin de carte : toutes propositions révélées **ou** aucun joueur actif.
+- Fin de partie : joueur atteint l'objectif de points **ou** parcours terminé.
+- Les points temporaires des joueurs encore actifs en fin de carte sont capitalisés automatiquement.
+- Gestion des égalités via `winnerIds` multiples.
 
-### 7.2 Scripts principaux
+## 8. Build, tests et qualité
 
-- `npm run dev` : Vite + Electron
-- `npm run build` : build web + build Electron
-- `npm run dist` : packaging multi-plateforme
-- `npm run test` : Vitest
-- `npm run lint` : `tsc --noEmit`
+### 8.1 Scripts principaux
 
-### 7.3 Couverture de tests actuelle
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | Vite + Electron en parallèle |
+| `npm run build` | Build renderer + compilation TS Electron |
+| `npm run dist` | Packaging electron-builder |
+| `npm test` | Vitest (run once) |
+| `npm run test:watch` | Vitest en mode watch |
+| `npm run lint` | `tsc --noEmit` |
 
-- tests unitaires du moteur historique dans `desktop/tests/engine.test.ts` ;
-- pas encore de tests automatisés ciblant le store Zustand multi-types ;
-- setup jsdom prêt pour tests UI (`desktop/tests/setup.ts`).
+### 8.2 Tests unitaires
 
-## 8. Sécurité et robustesse
+Répertoire : `desktop/tests/`
 
-Mesures en place :
-- isolation du contexte renderer ;
-- absence d'API Node directe en UI ;
-- validation des payloads importés ;
-- fallback en cas de JSON invalide ou corrompu.
+| Fichier | Couverture |
+|---|---|
+| `engine.test.ts` | Moteur historique Vrai/Faux (buildInitialGameState, startGame, submitAnswer, endRound, cas limites) |
+| `questionPacks.test.ts` | parseNumericAnswer, createCard, validateCard, importCardsFromJson, exportCards, flattenCardsToQuestions |
+| `questionTypeColors.test.ts` | Labels, couleurs et descriptions par type ; cohérence palette |
+| `constants.test.ts` | DEFAULT_ANSWER_BY_TYPE, EMPTY_PROPOSITIONS |
+
+Environnement jsdom (Vitest) — `localStorage` disponible nativement.
+
+### 8.3 Outils
+
+- Bundler renderer : Vite (`vite.config.ts`, root `desktop`)
+- Compilation TS Electron : `tsconfig.electron.json`
+- Packaging : `electron-builder`
+
+## 9. Sécurité et robustesse
+
+- Isolation du contexte renderer (`contextIsolation: true`).
+- Absence d'API Node directe en UI.
+- Validation des payloads importés (filtre silencieux des entrées invalides).
+- Fallback en cas de JSON invalide ou corrompu.
 
 Points de vigilance :
-- les données persistent en `localStorage` (non chiffré) ;
-- absence actuelle de versionnement explicite des schémas de données ;
-- dépendance forte à la logique du store (peu de séparation service/métier).
+- Les données persistent en `localStorage` (non chiffré).
+- Absence de versionnement explicite des schémas de données.
 
-## 9. Dette technique identifiée
+## 10. Dette technique identifiée
 
-1. Duplication de logique entre moteur historique (`engine.ts`) et logique de partie du store.
-2. Couverture de tests insuffisante sur le flux réel multi-types.
-3. Nommage UI visible "GeniusBox" dans `App.tsx` alors que le produit est "Smart 10".
-4. Gestion d'erreur incohérente : création de carte dupliquée lève une exception (`throw`) alors que le contrat de méthode prévoit un message de retour.
+1. Duplication de logique entre le moteur historique (`engine.ts`) et la logique de partie du store.
+2. Couverture de tests insuffisante sur le flux réel multi-types (store Zustand).
+3. Dépendance forte à la logique du store (peu de séparation service / métier).
 
-## 10. Recommandations d'évolution
+## 11. Recommandations d'évolution
 
-1. Isoler un moteur unique (pur) utilisé à la fois par le store et les tests.
-2. Ajouter des tests unitaires de transitions du store (phases, scoring, élimination, fins de manche).
-3. Harmoniser les labels produit (Smart 10) sur tout le renderer.
-4. Introduire un schéma versionné pour l'import/export des cartes.
-5. Ajouter une couche de persistance abstraite pour préparer une option de stockage fichier/DB.
+1. Isoler un moteur unique (pur, sans Zustand) utilisé à la fois par le store et les tests.
+2. Ajouter des tests d'intégration du store (phases, scoring, élimination, fins de manche).
+3. Introduire un schéma versionné pour l'import / export des cartes.
+4. Ajouter une couche de persistance abstraite pour préparer une option de stockage fichier / DB.
 
-## 11. Références
+## 12. Références
 
-- Documentation fonctionnelle : `docs/GAME_RULES.md`, `docs/QUESTION_AUTHORING.md`
-- Installation et exploitation : `docs/INSTALL.md`, `docs/TEST_PLAN.md`
-- Vue projet complète : `docs/PROJECT_OVERVIEW.md`
+- Règles fonctionnelles : [docs/GAME_RULES.md](GAME_RULES.md)
+- Création de cartes : [docs/QUESTION_AUTHORING.md](QUESTION_AUTHORING.md)
+- Installation : [docs/INSTALL.md](INSTALL.md)
+- Plan de tests : [docs/TEST_PLAN.md](TEST_PLAN.md)
+- Vue projet complète : [docs/PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)
