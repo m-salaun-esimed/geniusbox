@@ -14,6 +14,7 @@
 ### Prérequis
 
 - **Node.js 20+** et npm
+- Pour Android : **Android Studio** + SDK Android installés
 
 ### Installation
 
@@ -38,6 +39,19 @@ Le renderer Vite est disponible sur `http://localhost:5173` pour le debug naviga
 npm run build        # Compile le renderer (dist/) et le process Electron (dist-electron/)
 npm run dist         # Génère l'installeur multi-plateforme via electron-builder
 ```
+
+### Build Android (APK)
+
+```bash
+npm run cap:add:android    # À lancer une seule fois (initialisation Android)
+npm run cap:sync         # Build web + sync vers le projet natif Android
+npm run cap:open:android # Ouvre Android Studio sur le projet Android
+```
+
+Dans Android Studio :
+1. Attendre la fin du Gradle Sync.
+2. Aller dans **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+3. Récupérer l'APK généré depuis le lien affiché par Android Studio.
 
 ### Tests unitaires
 

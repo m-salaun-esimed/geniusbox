@@ -45,6 +45,7 @@ Elle permet de créer des parcours, lancer des parties multi-joueurs, suivre les
 - Zustand (état global)
 - Vite (bundler)
 - Electron (packaging desktop)
+- Capacitor (container Android)
 - Vitest (tests unitaires)
 
 ## Démarrage rapide
@@ -62,6 +63,16 @@ Build et packaging :
 npm run build      # Compile le renderer et le process Electron
 npm run dist       # Génère l'installeur (dmg / exe / AppImage)
 ```
+
+Build Android (APK via Android Studio) :
+
+```bash
+npm run cap:add:android  # À faire une seule fois pour créer le projet natif
+npm run cap:sync       # Build web + synchronise Capacitor Android
+npm run cap:open:android
+```
+
+Puis, dans Android Studio, utilisez **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
 
 Tests :
 
