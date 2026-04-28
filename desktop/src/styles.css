@@ -4497,10 +4497,78 @@ textarea:focus-visible,
 /* ── Credits modal ──────────────────────────────────────────────────── */
 .credits-modal {
   width: min(640px, 96vw);
+  max-height: 92dvh;
   padding: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.credits-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+  background: color-mix(in oklab, var(--surface-2) 90%, transparent);
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.credits-close:hover {
+  background: color-mix(in oklab, var(--accent-rose) 20%, var(--surface-2));
+  color: var(--accent-rose);
+  filter: none;
+}
+
+.credits-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.credits-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.credits-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.credits-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--border) 70%, transparent);
+  border-radius: 999px;
+}
+
+@media (max-width: 480px) {
+  .credits-modal {
+    width: 100vw;
+    max-height: 100dvh;
+    border-radius: 0;
+    margin: 0;
+    align-self: flex-end;
+  }
+
+  .modal-backdrop:has(.credits-modal) {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .credits-people-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .credits-header {

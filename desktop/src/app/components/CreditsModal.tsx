@@ -4,7 +4,7 @@ import axelPhoto from '../../assets/credits/axel.jpg';
 import jeremyPhoto from '../../assets/credits/jeremy.jpg';
 import matheoPhoto from '../../assets/credits/matheo.jpg';
 import lucasPhoto from '../../assets/credits/lucas.jpg';
-import matthieuPhoto from '../../assets/credits/matthieu.jpg';
+import matthieuPhoto from '../../assets/credits/matthieu_cowboy.png';
 
 type CreditPerson = {
   name: string;
@@ -48,42 +48,42 @@ export const CreditsModal = ({ open, onClose }: CreditsModalProps) => {
   return createPortal(
     <div className='modal-backdrop' onClick={onClose}>
       <div className='modal-card credits-modal' onClick={(e) => e.stopPropagation()}>
-        <div className='credits-header'>
-          <div className='credits-logo'>
-            <span className='credits-logo-icon'>GB</span>
+        <button type='button' className='credits-close' onClick={onClose} aria-label='Fermer'>
+          ✕
+        </button>
+
+        <div className='credits-scroll'>
+          <div className='credits-header'>
+            <div className='credits-logo'>
+              <span className='credits-logo-icon'>GB</span>
+            </div>
+            <h2 className='credits-title'>GeniusBox</h2>
+            <p className='credits-subtitle'>Quiz & Parcours — Jeu de bureau local</p>
+            <p className='credits-initiative'>Initiative ludo-pédagogique proposée par<br /><strong>Thierry Secqueville</strong> · Esimed 2026</p>
           </div>
-          <h2 className='credits-title'>GeniusBox</h2>
-          <p className='credits-subtitle'>Quiz & Parcours — Jeu de bureau local</p>
-          <p className='credits-initiative'>Initiative ludo-pédagogique proposée par<br /><strong>Thierry Secqueville</strong> · Esimed 2026</p>
-        </div>
 
-        <div className='credits-body'>
-          <section className='credits-section'>
-            <h3 className='credits-section-title'>L'équipe</h3>
-            <div className='credits-people-grid'>
-              {CREDITS_PEOPLE.map((person, index) => (
-                <PersonCard key={index} {...person} />
-              ))}
-            </div>
-          </section>
+          <div className='credits-body'>
+            <section className='credits-section'>
+              <h3 className='credits-section-title'>L'équipe</h3>
+              <div className='credits-people-grid'>
+                {CREDITS_PEOPLE.map((person, index) => (
+                  <PersonCard key={index} {...person} />
+                ))}
+              </div>
+            </section>
 
-          <section className='credits-section'>
-            <h3 className='credits-section-title'>Technologies</h3>
-            <div className='credits-tech-grid'>
-              <span className='credits-tech-pill'>Electron</span>
-              <span className='credits-tech-pill'>React</span>
-              <span className='credits-tech-pill'>TypeScript</span>
-              <span className='credits-tech-pill'>Zustand</span>
-              <span className='credits-tech-pill'>Vite</span>
-              <span className='credits-tech-pill'>Vitest</span>
-            </div>
-          </section>
-        </div>
-
-        <div className='credits-footer'>
-          <button type='button' className='primary-button' onClick={onClose}>
-            Fermer
-          </button>
+            <section className='credits-section'>
+              <h3 className='credits-section-title'>Technologies</h3>
+              <div className='credits-tech-grid'>
+                <span className='credits-tech-pill'>Electron</span>
+                <span className='credits-tech-pill'>React</span>
+                <span className='credits-tech-pill'>TypeScript</span>
+                <span className='credits-tech-pill'>Zustand</span>
+                <span className='credits-tech-pill'>Vite</span>
+                <span className='credits-tech-pill'>Vitest</span>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </div>,
