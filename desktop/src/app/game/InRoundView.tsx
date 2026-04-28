@@ -40,6 +40,9 @@ export const InRoundView = ({
     return stored === 'list' ? 'list' : 'wheel';
   });
   const previousDecisionPlayerRef = useRef<string | null>(null);
+  const [playerChangeBanner, setPlayerChangeBanner] = useState<string | null>(null);
+  const previousCurrentPlayerRef = useRef<string | null>(null);
+  const playerChangeTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     window.localStorage.setItem('smart10.inRoundViewMode', viewMode);
@@ -58,7 +61,45 @@ export const InRoundView = ({
   }, [matchState?.decisionPendingPlayerId, sounds]);
 
   useEffect(() => {
-    if (timerRemaining === null || timerRemaining <= 0) {
+    const currentId = matchState?.currentPlayerId ?? null;
+    const previousId = previousCurrentPlayerRef.current;
+    if (
+      currentId &&
+      previousId &&
+      currentId !== previousId &&
+      matchState?.phase === 'in_round'
+    ) {
+      const nextPlayer = matchState.players.find((player) => player.id === currentId);
+      if (nextPlayer) {
+        setPlayerChangeBanner(nextPlayer.name);
+        if (playerChangeTimeoutRef.current !== null) {
+          window.clearTimeout(playerChangeTimeoutRef.current);
+        }
+        playerChangeTimeoutRef.current = window.setTimeout(() => {
+          setPlayerChangeBanner(null);
+          playerChangeTimeoutRef.current = null;
+        }, 1600);
+      }
+    }
+    previousCurrentPlayerRef.current = currentId;
+  }, [matchState?.currentPlayerId, matchState?.phase, matchState?.players]);
+
+  useEffect(() => {
+    return () => {
+      if (playerChangeTimeoutRef.current !== null) {
+        window.clearTimeout(playerChangeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const isTimerPaused = Boolean(
+    matchState?.decisionPendingPlayerId ||
+      matchState?.wrongAnswerFeedback ||
+      matchState?.pendingFreeTextValidation,
+  );
+
+  useEffect(() => {
+    if (timerRemaining === null || timerRemaining <= 0 || isTimerPaused) {
       return;
     }
     const interval = window.setInterval(() => {
@@ -76,7 +117,7 @@ export const InRoundView = ({
       });
     }, 1000);
     return () => window.clearInterval(interval);
-  }, [timerRemaining, sounds]);
+  }, [timerRemaining, isTimerPaused, sounds]);
 
   if (!matchState || matchState.phase !== 'in_round') {
     return null;
@@ -93,6 +134,8 @@ export const InRoundView = ({
     matchState.players.find((player) => player.id === matchState.decisionPendingPlayerId) ?? null;
   const wrongFeedback = matchState.wrongAnswerFeedback;
   const pendingFreeTextValidation = matchState.pendingFreeTextValidation;
+  const selectedPathName = matchState.selectedPathName;
+  const selectedPathCategory = matchState.selectedPathCategory;
 
   if (!currentPlayer) {
     return null;
@@ -100,6 +143,35 @@ export const InRoundView = ({
 
   const answerInputsDisabled =
     !selectedProposition || Boolean(decisionPlayer) || Boolean(wrongFeedback);
+
+  const decisionWouldWin = decisionPlayer
+    ? decisionPlayer.totalScore + decisionPlayer.tempScore >= matchState.targetPointsToWin
+    : false;
+
+  const restartTimerIfRunning = () => {
+    if (timerRemaining !== null) {
+      setTimerRemaining(timerDuration);
+    }
+  };
+
+  const handleCapitalize = () => {
+    sounds.secure();
+    secureAndStopTurn();
+    restartTimerIfRunning();
+  };
+
+  const handleContinue = () => {
+    if (decisionWouldWin) return;
+    sounds.risk();
+    riskAndContinueTurn();
+    restartTimerIfRunning();
+  };
+
+  const handleAcknowledgeWrong = () => {
+    sounds.navigate();
+    acknowledgeWrongAnswerFeedback();
+    restartTimerIfRunning();
+  };
 
   return (
     <main>
@@ -112,6 +184,18 @@ export const InRoundView = ({
               ? ' · Mode Flash'
               : ` · Objectif ${matchState.targetPointsToWin}`}
           </p>
+          {selectedPathName ? (
+            <div className='game-path-pill' title={`Parcours: ${selectedPathName}`}>
+              <span className='game-path-pill-label'>Parcours</span>
+              <strong>{selectedPathName}</strong>
+              <span className='game-path-pill-separator' aria-hidden='true'>
+                •
+              </span>
+              <span className='game-path-pill-category'>
+                {selectedPathCategory || 'Sans catégorie'}
+              </span>
+            </div>
+          ) : null}
         </header>
 
         <div className='game-grid'>
@@ -121,7 +205,7 @@ export const InRoundView = ({
           >
             <div className='timer-bar'>
               <div
-                className={`timer-pill ${timerRemaining !== null && timerRemaining <= 5 ? 'is-danger' : ''}`}
+                className={`timer-pill ${timerRemaining !== null && timerRemaining <= 5 ? 'is-danger' : ''} ${isTimerPaused && timerRemaining !== null ? 'is-paused' : ''}`}
               >
                 <svg
                   viewBox='0 0 24 24'
@@ -148,52 +232,15 @@ export const InRoundView = ({
                     className={
                       timerDuration === value ? 'points-button is-active' : 'points-button'
                     }
-                    onClick={() => setTimerDuration(value)}
+                    onClick={() => {
+                      setTimerDuration(value);
+                      setTimerRemaining(value);
+                      sounds.navigate();
+                    }}
                   >
                     {value}s
                   </button>
                 ))}
-              </div>
-              <div className='timer-icon-actions'>
-                <button
-                  type='button'
-                  className='icon-button icon-button-primary'
-                  title='Déclencher le timer'
-                  aria-label='Déclencher le timer'
-                  onClick={() => {
-                    setTimerRemaining(timerDuration);
-                    sounds.navigate();
-                  }}
-                  disabled={Boolean(decisionPlayer) || Boolean(wrongFeedback)}
-                >
-                  <svg
-                    viewBox='0 0 24 24'
-                    width='14'
-                    height='14'
-                    aria-hidden='true'
-                    fill='currentColor'
-                  >
-                    <path d='M8 5.5v13a1 1 0 0 0 1.55.83l10-6.5a1 1 0 0 0 0-1.66l-10-6.5A1 1 0 0 0 8 5.5z' />
-                  </svg>
-                </button>
-                <button
-                  type='button'
-                  className='icon-button'
-                  title='Arrêter le timer'
-                  aria-label='Arrêter le timer'
-                  onClick={() => setTimerRemaining(null)}
-                  disabled={timerRemaining === null}
-                >
-                  <svg
-                    viewBox='0 0 24 24'
-                    width='14'
-                    height='14'
-                    aria-hidden='true'
-                    fill='currentColor'
-                  >
-                    <rect x='6' y='6' width='12' height='12' rx='1.5' />
-                  </svg>
-                </button>
               </div>
             </div>
             <div className='game-meta-row'>
@@ -346,24 +393,53 @@ export const InRoundView = ({
               </div>
             ) : (
               <ul className='question-list propositions-live-grid'>
-                {card.propositions.map((proposition) => {
+                {card.propositions.map((proposition, idx) => {
                   const isRevealed = matchState.revealedPropositionIds.includes(proposition.id);
                   const isSelected = proposition.id === matchState.selectedPropositionId;
+                  const disabled =
+                    isRevealed || Boolean(decisionPlayer) || Boolean(wrongFeedback);
                   return (
                     <li
                       key={proposition.id}
-                      className={`${isSelected ? 'card-item is-active' : 'card-item'} ${isRevealed ? 'is-revealed' : ''}`}
+                      className={`card-item list-prop ${isSelected ? 'is-active' : ''} ${isRevealed ? 'is-revealed' : ''}`}
+                      role='button'
+                      tabIndex={disabled ? -1 : 0}
+                      aria-pressed={isSelected}
+                      aria-disabled={disabled}
                       onClick={() => {
-                        if (!isRevealed && !decisionPlayer && !wrongFeedback) {
+                        if (!disabled) {
+                          sounds.click();
+                          selectProposition(proposition.id);
+                        }
+                      }}
+                      onKeyDown={(event) => {
+                        if (disabled) return;
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
                           sounds.click();
                           selectProposition(proposition.id);
                         }
                       }}
                     >
-                      <div className='card-item-content'>
-                        <strong>{proposition.text}</strong>
-                        <span>{isRevealed ? 'Déjà répondu' : 'Clique pour répondre'}</span>
-                      </div>
+                      <span className='list-prop-index' aria-hidden='true'>
+                        {isRevealed ? (
+                          <svg
+                            viewBox='0 0 24 24'
+                            width='14'
+                            height='14'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='3'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          >
+                            <path d='M5 12.5l4.5 4.5L19 7.5' />
+                          </svg>
+                        ) : (
+                          idx + 1
+                        )}
+                      </span>
+                      <span className='list-prop-text'>{proposition.text}</span>
                     </li>
                   );
                 })}
@@ -564,33 +640,63 @@ export const InRoundView = ({
       {decisionPlayer
         ? createPortal(
             <div className='modal-backdrop'>
-              <div className='modal-card decision-modal'>
-                <h3>Bonne réponse</h3>
-                <p>
-                  <strong>{decisionPlayer.name}</strong> a maintenant {decisionPlayer.tempScore}{' '}
-                  point(s) temporaire(s).
-                </p>
-                <p>Tu veux capitaliser tes points ou continuer pour en gagner d'autres ?</p>
-                <div className='modal-actions'>
+              <div className='modal-card decision-modal decision-modal--correct'>
+                <div className='decision-burst' aria-hidden='true'>
+                  <svg viewBox='0 0 24 24' width='38' height='38'>
+                    <path
+                      d='M5 12.5l4.5 4.5L19 7.5'
+                      fill='none'
+                      stroke='currentColor'
+                      strokeWidth='3'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </div>
+                <p className='decision-eyebrow'>Bonne réponse</p>
+                <h3 className='decision-player'>{decisionPlayer.name}</h3>
+                <div className='decision-points'>
+                  <span className='decision-points-current'>
+                    {decisionPlayer.totalScore}
+                  </span>
+                  <span className='decision-points-plus'>
+                    +{decisionPlayer.tempScore}
+                  </span>
+                  <span className='decision-points-label'>pts en jeu</span>
+                </div>
+                {decisionWouldWin ? (
+                  <p className='decision-helper decision-helper--win'>
+                    En capitalisant, tu remportes la partie !
+                  </p>
+                ) : (
+                  <p className='decision-helper'>
+                    Capitalise pour sécuriser tes points, ou continue pour en gagner plus
+                    (au risque de tout perdre).
+                  </p>
+                )}
+                <div className='decision-actions'>
                   <button
                     type='button'
-                    className='primary-button'
-                    onClick={() => {
-                      sounds.secure();
-                      secureAndStopTurn();
-                    }}
+                    className='primary-button decision-action decision-action--secure'
+                    onClick={handleCapitalize}
                   >
-                    Capitaliser
+                    <span className='decision-action-title'>
+                      {decisionWouldWin ? 'Gagner la partie' : 'Capitaliser'}
+                    </span>
+                    <span className='decision-action-sub'>
+                      +{decisionPlayer.tempScore} sécurisé{decisionPlayer.tempScore > 1 ? 's' : ''}
+                    </span>
                   </button>
-                  <button
-                    type='button'
-                    onClick={() => {
-                      sounds.risk();
-                      riskAndContinueTurn();
-                    }}
-                  >
-                    Continuer
-                  </button>
+                  {decisionWouldWin ? null : (
+                    <button
+                      type='button'
+                      className='decision-action decision-action--risk'
+                      onClick={handleContinue}
+                    >
+                      <span className='decision-action-title'>Continuer</span>
+                      <span className='decision-action-sub'>Risquer pour plus de points</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>,
@@ -600,20 +706,43 @@ export const InRoundView = ({
       {wrongFeedback
         ? createPortal(
             <div className='modal-backdrop'>
-              <div className='modal-card decision-modal'>
-                <h3>Réponse fausse</h3>
-                <p>{wrongFeedback.message}</p>
-                <p>Cette proposition est désormais marquée comme déjà répondue.</p>
-                <div className='modal-actions'>
+              <div className='modal-card decision-modal decision-modal--wrong'>
+                <div className='decision-burst decision-burst--wrong' aria-hidden='true'>
+                  <svg viewBox='0 0 24 24' width='38' height='38'>
+                    <path
+                      d='M6 6l12 12M18 6L6 18'
+                      fill='none'
+                      stroke='currentColor'
+                      strokeWidth='3'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </div>
+                <p className='decision-eyebrow decision-eyebrow--wrong'>Mauvaise réponse</p>
+                <h3 className='decision-player'>{currentPlayer.name}</h3>
+                {wrongFeedback.propositionText ? (
+                  <div className='decision-points decision-points--wrong'>
+                    <span className='decision-points-label'>Proposition</span>
+                    <span className='decision-points-current'>
+                      {wrongFeedback.propositionText}
+                    </span>
+                  </div>
+                ) : null}
+                <p className='decision-helper decision-helper--wrong'>
+                  Bonne réponse&nbsp;: <strong>{wrongFeedback.correctAnswer}</strong>
+                </p>
+                <p className='decision-helper'>
+                  Tu perds tes points en jeu et tu es éliminé pour cette carte.
+                </p>
+                <div className='decision-actions'>
                   <button
                     type='button'
-                    className='primary-button'
-                    onClick={() => {
-                      sounds.navigate();
-                      acknowledgeWrongAnswerFeedback();
-                    }}
+                    className='primary-button decision-action decision-action--wrong'
+                    onClick={handleAcknowledgeWrong}
                   >
-                    Tour suivant
+                    <span className='decision-action-title'>Tour suivant</span>
+                    <span className='decision-action-sub'>Passer la main</span>
                   </button>
                 </div>
               </div>
@@ -650,6 +779,17 @@ export const InRoundView = ({
                     Compter comme faux
                   </button>
                 </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+      {playerChangeBanner
+        ? createPortal(
+            <div className='player-change-overlay' aria-live='polite'>
+              <div className='player-change-card'>
+                <span className='player-change-eyebrow'>Au tour de</span>
+                <span className='player-change-name'>{playerChangeBanner}</span>
               </div>
             </div>,
             document.body,

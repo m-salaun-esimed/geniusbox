@@ -27,14 +27,23 @@ interface MatchPlayer {
 interface MatchState {
   phase: MatchPhase;
   targetPointsToWin: number;
+  selectedPathName: string | null;
+  selectedPathCategory: string | null;
   orderedCards: QuestionCard[];
   currentCardIndex: number;
   currentPlayerId: string;
   players: MatchPlayer[];
   revealedPropositionIds: string[];
+  wrongPropositionIds: string[];
   selectedPropositionId: string | null;
   decisionPendingPlayerId: string | null;
-  wrongAnswerFeedback: { message: string; nextPlayerId: string | null } | null;
+  wrongAnswerFeedback: {
+    message: string;
+    nextPlayerId: string | null;
+    propositionId: string;
+    propositionText: string;
+    correctAnswer: string;
+  } | null;
   pendingFreeTextValidation: {
     propositionId: string;
     submittedAnswer: string;
@@ -443,15 +452,27 @@ export const useAppStore = create<AppState>((set, get) => ({
     }));
     const matchTargetPoints =
       state.gameMode === "flash" ? Number.MAX_SAFE_INTEGER : state.targetPointsToWin;
+    const selectedPath =
+      state.gameMode === "parcours"
+        ? state.savedPaths.find((path) => {
+            if (path.cardIds.length !== cardIdsForMatch.length) {
+              return false;
+            }
+            return path.cardIds.every((cardId, index) => cardId === cardIdsForMatch[index]);
+          }) ?? null
+        : null;
     set({
       matchState: {
         phase: "in_round",
         targetPointsToWin: matchTargetPoints,
+        selectedPathName: selectedPath?.name ?? null,
+        selectedPathCategory: selectedPath?.category ?? null,
         orderedCards,
         currentCardIndex: 0,
         currentPlayerId: players[0].id,
         players,
         revealedPropositionIds: [],
+        wrongPropositionIds: [],
         selectedPropositionId: null,
         decisionPendingPlayerId: null,
         wrongAnswerFeedback: null,
@@ -519,26 +540,31 @@ export const useAppStore = create<AppState>((set, get) => ({
       const updatedPlayers = match.players.map((player) =>
         player.id === current.id ? { ...player, tempScore: 0, status: "eliminated" as const } : player
       );
-      const updatedMatch = resolveRoundIfEnded({
+      const pendingMatch: MatchState = {
         ...match,
         players: updatedPlayers,
         revealedPropositionIds: [...match.revealedPropositionIds, proposition.id],
+        wrongPropositionIds: [...match.wrongPropositionIds, proposition.id],
         selectedPropositionId: null,
         decisionPendingPlayerId: null,
         wrongAnswerFeedback: null,
         pendingFreeTextValidation: null
-      });
-      if (updatedMatch.phase !== "in_round") {
-        return { matchState: updatedMatch };
-      }
-      const nextPlayerId = getNextActivePlayerId(updatedMatch, current.id);
+      };
+      const nextPlayerId = getNextActivePlayerId(pendingMatch, current.id);
       return {
         matchState: {
-          ...updatedMatch,
-          pendingFreeTextValidation: null,
+          ...pendingMatch,
           wrongAnswerFeedback: {
             message: `Mauvaise réponse pour "${proposition.text}".`,
-            nextPlayerId
+            nextPlayerId,
+            propositionId: proposition.id,
+            propositionText: proposition.text,
+            correctAnswer:
+              card.type === "true_false"
+                ? proposition.correctAnswer === "true"
+                  ? "Vrai"
+                  : "Faux"
+                : proposition.correctAnswer
           }
         }
       };
@@ -580,28 +606,32 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (!current || current.status !== "active") {
         return state;
       }
+      const pending = match.pendingFreeTextValidation;
+      const card = getCurrentCard(match);
+      const proposition = card.propositions.find((item) => item.id === pending.propositionId);
       const updatedPlayers = match.players.map((player) =>
         player.id === current.id ? { ...player, tempScore: 0, status: "eliminated" as const } : player
       );
-      const updatedMatch = resolveRoundIfEnded({
+      const pendingMatch: MatchState = {
         ...match,
         players: updatedPlayers,
-        revealedPropositionIds: [...match.revealedPropositionIds, match.pendingFreeTextValidation.propositionId],
+        revealedPropositionIds: [...match.revealedPropositionIds, pending.propositionId],
+        wrongPropositionIds: [...match.wrongPropositionIds, pending.propositionId],
         selectedPropositionId: null,
         decisionPendingPlayerId: null,
         wrongAnswerFeedback: null,
         pendingFreeTextValidation: null
-      });
-      if (updatedMatch.phase !== "in_round") {
-        return { matchState: updatedMatch };
-      }
-      const nextPlayerId = getNextActivePlayerId(updatedMatch, current.id);
+      };
+      const nextPlayerId = getNextActivePlayerId(pendingMatch, current.id);
       return {
         matchState: {
-          ...updatedMatch,
+          ...pendingMatch,
           wrongAnswerFeedback: {
             message: "Mauvaise réponse.",
-            nextPlayerId
+            nextPlayerId,
+            propositionId: pending.propositionId,
+            propositionText: proposition?.text ?? "",
+            correctAnswer: pending.expectedAnswer
           }
         }
       };
@@ -655,12 +685,19 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (!match || !match.wrongAnswerFeedback) {
         return state;
       }
+      const cleared: MatchState = {
+        ...match,
+        wrongAnswerFeedback: null,
+        pendingFreeTextValidation: null
+      };
+      const resolved = resolveRoundIfEnded(cleared);
+      if (resolved.phase !== "in_round") {
+        return { matchState: resolved };
+      }
       return {
         matchState: {
-          ...match,
-          currentPlayerId: match.wrongAnswerFeedback.nextPlayerId ?? match.currentPlayerId,
-          wrongAnswerFeedback: null,
-          pendingFreeTextValidation: null
+          ...resolved,
+          currentPlayerId: match.wrongAnswerFeedback.nextPlayerId ?? resolved.currentPlayerId
         }
       };
     }),
@@ -683,6 +720,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           currentPlayerId: nextPlayers[nextIndex % nextPlayers.length].id,
           players: nextPlayers,
           revealedPropositionIds: [],
+          wrongPropositionIds: [],
           selectedPropositionId: null,
           decisionPendingPlayerId: null,
           wrongAnswerFeedback: null,

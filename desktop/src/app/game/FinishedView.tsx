@@ -1,19 +1,10 @@
 import { useAppStore } from '../store';
-import { EndMatchConfirmModal } from '../components/EndMatchConfirmModal';
 
 type FinishedViewProps = {
-  onConfirmEndMatch: () => void;
-  endMatchConfirmOpen: boolean;
-  onCancelEndMatch: () => void;
   onAcceptEndMatch: () => void;
 };
 
-export const FinishedView = ({
-  onConfirmEndMatch,
-  endMatchConfirmOpen,
-  onCancelEndMatch,
-  onAcceptEndMatch,
-}: FinishedViewProps) => {
+export const FinishedView = ({ onAcceptEndMatch }: FinishedViewProps) => {
   const matchState = useAppStore((state) => state.matchState);
 
   if (!matchState || matchState.phase !== 'finished') {
@@ -58,17 +49,12 @@ export const FinishedView = ({
             ))}
           </ul>
           <div className='bottom-right-actions'>
-            <button type='button' className='danger-button' onClick={onConfirmEndMatch}>
+            <button type='button' className='danger-button' onClick={onAcceptEndMatch}>
               Terminer la partie
             </button>
           </div>
         </div>
       </section>
-      <EndMatchConfirmModal
-        open={endMatchConfirmOpen}
-        onCancel={onCancelEndMatch}
-        onConfirm={onAcceptEndMatch}
-      />
     </main>
   );
 };

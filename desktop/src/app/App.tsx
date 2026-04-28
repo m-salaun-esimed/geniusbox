@@ -66,7 +66,7 @@ export const App = () => {
   }
 
   if (matchState?.phase === 'finished') {
-    return <FinishedView {...endMatchProps} />;
+    return <FinishedView onAcceptEndMatch={acceptEndMatch} />;
   }
 
   return (
@@ -83,8 +83,8 @@ export const App = () => {
           <div className='editor-grid'>
             {currentStep === 0 ? <PlayersSection /> : null}
             {currentStep === 2 ? <GameModeSection /> : null}
-            {currentStep === 3 && gameMode === 'flash' ? <FlashCardSection /> : null}
-            {currentStep === 3 && gameMode === 'parcours' ? <MatchOrderSection /> : null}
+            {currentStep === 2 && gameMode === 'flash' ? <FlashCardSection /> : null}
+            {currentStep === 2 && gameMode === 'parcours' ? <MatchOrderSection /> : null}
             <QuestionEditor currentStep={currentStep} />
           </div>
         </div>

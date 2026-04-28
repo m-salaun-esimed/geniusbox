@@ -16,4 +16,4 @@ export const MAX_CHOICES = 3;
 export const EMPTY_PROPOSITIONS = (type: QuestionType) =>
   Array.from({ length: 10 }, () => ({ text: '', correctAnswer: DEFAULT_ANSWER_BY_TYPE[type] }));
 
-export const STEPS = ['Joueurs', 'Cartes', 'Mode', 'Sélection'] as const;
+export const STEPS = ['Joueurs', 'Cartes', 'Mode'] as const;

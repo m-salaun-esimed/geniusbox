@@ -44,12 +44,15 @@ export const RoundSummaryView = ({
           </span>
           <ul className='question-list propositions-live-grid'>
             {card.propositions.map((proposition) => {
+              const wasWrong = matchState.wrongPropositionIds.includes(proposition.id);
               const wasFound = matchState.revealedPropositionIds.includes(proposition.id);
+              const className = wasWrong
+                ? 'card-item is-wrong'
+                : wasFound
+                  ? 'card-item is-revealed'
+                  : 'card-item';
               return (
-                <li
-                  key={proposition.id}
-                  className={wasFound ? 'card-item is-revealed' : 'card-item'}
-                >
+                <li key={proposition.id} className={className}>
                   <div className='card-item-content'>
                     <strong>{proposition.text}</strong>
                     <span>

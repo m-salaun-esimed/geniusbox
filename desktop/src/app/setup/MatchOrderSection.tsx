@@ -129,33 +129,6 @@ export const MatchOrderSection = () => {
     }
   };
 
-  const deleteSelectedPathFromModal = async () => {
-    if (!selectedPathId) {
-      setPathModalError('Sélectionne un parcours à supprimer.');
-      sounds.wrong();
-      return;
-    }
-    const targetName = savedPaths.find((p) => p.id === selectedPathId)?.name ?? 'ce parcours';
-    sounds.openModal();
-    const confirmed = await confirmDialog({
-      title: 'Supprimer ce parcours ?',
-      message: `« ${targetName} » sera retiré de tes parcours sauvegardés.`,
-      confirmLabel: 'Supprimer',
-      danger: true,
-    });
-    if (!confirmed) {
-      return;
-    }
-    deletePath(selectedPathId);
-    setSelectedPathId('');
-    setPathName('');
-    setPathCategory('');
-    setCardSelectionForMatch([]);
-    setMatchMessage('Parcours supprimé.');
-    closePathModal();
-    sounds.wrong();
-  };
-
   const modalTitle =
     pathModalMode === 'create'
       ? 'Nouveau parcours'
@@ -565,15 +538,6 @@ export const MatchOrderSection = () => {
             </div>
 
             <div className='modal-footer'>
-              {pathModalMode === 'edit' ? (
-                <button
-                  type='button'
-                  className='danger-button'
-                  onClick={deleteSelectedPathFromModal}
-                >
-                  Supprimer
-                </button>
-              ) : null}
               <button type='button' onClick={closePathModal}>
                 {pathModalMode === 'view' ? 'Fermer' : 'Annuler'}
               </button>
