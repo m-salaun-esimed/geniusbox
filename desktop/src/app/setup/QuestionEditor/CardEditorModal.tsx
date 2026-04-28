@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { QuestionType } from '../../../game-engine/types';
 import { ColorSelect } from '../../components/ColorSelect';
 import { QuestionTypeSelect } from '../../components/QuestionTypeSelect';
@@ -117,7 +118,7 @@ export const CardEditorModal = ({
     );
   };
 
-  return (
+  return createPortal(
     <div className='modal-backdrop' onClick={onClose}>
       <div
         className='modal-card modal-card--framed'
@@ -287,6 +288,7 @@ export const CardEditorModal = ({
           </button>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

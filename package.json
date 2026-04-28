@@ -1,7 +1,7 @@
 {
   "name": "smart10",
   "version": "0.1.0",
-  "description": "Smart10-style local multiplayer desktop game",
+  "description": "GeniusBox-style local multiplayer desktop game",
   "main": "dist-electron/main.js",
   "type": "module",
   "scripts": {
@@ -57,7 +57,7 @@
   },
   "build": {
     "appId": "com.smart10.desktop",
-    "productName": "Smart10 Local",
+    "productName": "GeniusBox Local",
     "files": [
       "dist/**/*",
       "dist-electron/**/*",

@@ -29,7 +29,7 @@ export const FinishedView = ({
     <main>
       <section className='editor-card game-shell'>
         <header className='editor-header'>
-          <h1>Classement final — Smart10</h1>
+          <h1>Classement final — GeniusBox</h1>
           <p>
             Gagnant{winners.length > 1 ? 's' : ''}:{' '}
             {winners.map((player) => player.name).join(', ')}
