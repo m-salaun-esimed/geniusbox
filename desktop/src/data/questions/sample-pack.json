@@ -189,7 +189,8 @@
   {
     "id": "card_12",
     "title": "Cette personnalite est-elle un homme ou une femme ?",
-    "type": "binary_choice",
+    "type": "choice",
+    "choices": ["homme", "femme"],
     "propositions": [
       { "id": "p_1", "text": "Marie Curie", "correctAnswer": "femme" },
       { "id": "p_2", "text": "Victor Hugo", "correctAnswer": "homme" },
@@ -218,6 +219,40 @@
       { "id": "p_8", "text": "Vienne", "correctAnswer": "Autriche" },
       { "id": "p_9", "text": "Oslo", "correctAnswer": "Norvege" },
       { "id": "p_10", "text": "Helsinki", "correctAnswer": "Finlande" }
+    ]
+  },
+  {
+    "id": "card_14",
+    "title": "Reponse libre (nombre): annee de naissance ou de creation",
+    "type": "free_number",
+    "propositions": [
+      { "id": "p_1", "text": "Revolution francaise", "correctAnswer": "1789" },
+      { "id": "p_2", "text": "Premier homme sur la Lune", "correctAnswer": "1969" },
+      { "id": "p_3", "text": "Chute du mur de Berlin", "correctAnswer": "1989" },
+      { "id": "p_4", "text": "Decouverte de l'Amerique par Christophe Colomb", "correctAnswer": "1492" },
+      { "id": "p_5", "text": "Fin de la Seconde Guerre mondiale", "correctAnswer": "1945" },
+      { "id": "p_6", "text": "Tour Eiffel achevee", "correctAnswer": "1889" },
+      { "id": "p_7", "text": "Fondation de Rome (annee legendaire)", "correctAnswer": "-753" },
+      { "id": "p_8", "text": "Sortie du premier iPhone", "correctAnswer": "2007" },
+      { "id": "p_9", "text": "Lancement de Wikipedia", "correctAnswer": "2001" },
+      { "id": "p_10", "text": "Valeur de Pi (2 decimales)", "correctAnswer": "3.14" }
+    ]
+  },
+  {
+    "id": "card_15",
+    "title": "Reponse libre (couleur): de quelle couleur est ?",
+    "type": "free_color",
+    "propositions": [
+      { "id": "p_1", "text": "Une feuille de menthe", "correctAnswer": "vert" },
+      { "id": "p_2", "text": "Le sang", "correctAnswer": "rouge" },
+      { "id": "p_3", "text": "Un ciel sans nuages", "correctAnswer": "bleu" },
+      { "id": "p_4", "text": "Une banane mure", "correctAnswer": "jaune" },
+      { "id": "p_5", "text": "Une citrouille", "correctAnswer": "orange" },
+      { "id": "p_6", "text": "Une aubergine", "correctAnswer": "violet" },
+      { "id": "p_7", "text": "Un flamant", "correctAnswer": "rose" },
+      { "id": "p_8", "text": "Du charbon", "correctAnswer": "noir" },
+      { "id": "p_9", "text": "La neige fraiche", "correctAnswer": "blanc" },
+      { "id": "p_10", "text": "Un nuage de pluie", "correctAnswer": "gris" }
     ]
   }
 ]

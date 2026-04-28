@@ -1,0 +1,105 @@
+[
+  {
+    "id": "card_template_true_false",
+    "title": "[TEMPLATE] Vrai / Faux — Cet animal est-il un mammifere ?",
+    "type": "true_false",
+    "propositions": [
+      { "id": "p_1", "text": "Chien", "correctAnswer": "true" },
+      { "id": "p_2", "text": "Lezard", "correctAnswer": "false" },
+      { "id": "p_3", "text": "Dauphin", "correctAnswer": "true" },
+      { "id": "p_4", "text": "Truite", "correctAnswer": "false" },
+      { "id": "p_5", "text": "Chauve-souris", "correctAnswer": "true" },
+      { "id": "p_6", "text": "Aigle", "correctAnswer": "false" },
+      { "id": "p_7", "text": "Baleine", "correctAnswer": "true" },
+      { "id": "p_8", "text": "Serpent", "correctAnswer": "false" },
+      { "id": "p_9", "text": "Tigre", "correctAnswer": "true" },
+      { "id": "p_10", "text": "Crocodile", "correctAnswer": "false" }
+    ]
+  },
+  {
+    "id": "card_template_ranking",
+    "title": "[TEMPLATE] Classement — Classe ces pays du plus peuple (1) au moins peuple (10)",
+    "type": "ranking",
+    "propositions": [
+      { "id": "p_1", "text": "Inde", "correctAnswer": "1" },
+      { "id": "p_2", "text": "Chine", "correctAnswer": "2" },
+      { "id": "p_3", "text": "Etats-Unis", "correctAnswer": "3" },
+      { "id": "p_4", "text": "Indonesie", "correctAnswer": "4" },
+      { "id": "p_5", "text": "Pakistan", "correctAnswer": "5" },
+      { "id": "p_6", "text": "Bresil", "correctAnswer": "6" },
+      { "id": "p_7", "text": "Nigeria", "correctAnswer": "7" },
+      { "id": "p_8", "text": "Bangladesh", "correctAnswer": "8" },
+      { "id": "p_9", "text": "Russie", "correctAnswer": "9" },
+      { "id": "p_10", "text": "Mexique", "correctAnswer": "10" }
+    ]
+  },
+  {
+    "id": "card_template_choice",
+    "title": "[TEMPLATE] Choix (2 ou 3 valeurs) — Ce mot vient du grec, du latin ou de l'anglais ?",
+    "type": "choice",
+    "choices": ["grec", "latin", "anglais"],
+    "propositions": [
+      { "id": "p_1", "text": "Democratie", "correctAnswer": "grec" },
+      { "id": "p_2", "text": "Aqua", "correctAnswer": "latin" },
+      { "id": "p_3", "text": "Smartphone", "correctAnswer": "anglais" },
+      { "id": "p_4", "text": "Philosophie", "correctAnswer": "grec" },
+      { "id": "p_5", "text": "Forum", "correctAnswer": "latin" },
+      { "id": "p_6", "text": "Computer", "correctAnswer": "anglais" },
+      { "id": "p_7", "text": "Athlete", "correctAnswer": "grec" },
+      { "id": "p_8", "text": "Veni", "correctAnswer": "latin" },
+      { "id": "p_9", "text": "Manager", "correctAnswer": "anglais" },
+      { "id": "p_10", "text": "Theatre", "correctAnswer": "grec" }
+    ]
+  },
+  {
+    "id": "card_template_free_text",
+    "title": "[TEMPLATE] Reponse libre (texte) — Quelle est la capitale de ce pays ?",
+    "type": "free_text",
+    "propositions": [
+      { "id": "p_1", "text": "France", "correctAnswer": "Paris" },
+      { "id": "p_2", "text": "Italie", "correctAnswer": "Rome" },
+      { "id": "p_3", "text": "Espagne", "correctAnswer": "Madrid" },
+      { "id": "p_4", "text": "Allemagne", "correctAnswer": "Berlin" },
+      { "id": "p_5", "text": "Portugal", "correctAnswer": "Lisbonne" },
+      { "id": "p_6", "text": "Belgique", "correctAnswer": "Bruxelles" },
+      { "id": "p_7", "text": "Pays-Bas", "correctAnswer": "Amsterdam" },
+      { "id": "p_8", "text": "Suisse", "correctAnswer": "Berne" },
+      { "id": "p_9", "text": "Autriche", "correctAnswer": "Vienne" },
+      { "id": "p_10", "text": "Grece", "correctAnswer": "Athenes" }
+    ]
+  },
+  {
+    "id": "card_template_free_number",
+    "title": "[TEMPLATE] Reponse libre (nombre) — En quelle annee est mort ce personnage ?",
+    "type": "free_number",
+    "propositions": [
+      { "id": "p_1", "text": "Napoleon Bonaparte", "correctAnswer": "1821" },
+      { "id": "p_2", "text": "Louis XIV", "correctAnswer": "1715" },
+      { "id": "p_3", "text": "Mozart", "correctAnswer": "1791" },
+      { "id": "p_4", "text": "Albert Einstein", "correctAnswer": "1955" },
+      { "id": "p_5", "text": "Pablo Picasso", "correctAnswer": "1973" },
+      { "id": "p_6", "text": "Marie Curie", "correctAnswer": "1934" },
+      { "id": "p_7", "text": "Charles de Gaulle", "correctAnswer": "1970" },
+      { "id": "p_8", "text": "Nelson Mandela", "correctAnswer": "2013" },
+      { "id": "p_9", "text": "Winston Churchill", "correctAnswer": "1965" },
+      { "id": "p_10", "text": "Mahatma Gandhi", "correctAnswer": "1948" }
+    ]
+  },
+  {
+    "id": "card_template_free_color",
+    "title": "[TEMPLATE] Reponse libre (couleur) — De quelle couleur est-ce principalement ?",
+    "type": "free_color",
+    "propositions": [
+      { "id": "p_1", "text": "Le sang", "correctAnswer": "rouge" },
+      { "id": "p_2", "text": "Le ciel sans nuage", "correctAnswer": "bleu" },
+      { "id": "p_3", "text": "L'herbe", "correctAnswer": "vert" },
+      { "id": "p_4", "text": "Une banane mure", "correctAnswer": "jaune" },
+      { "id": "p_5", "text": "Une carotte", "correctAnswer": "orange" },
+      { "id": "p_6", "text": "Une aubergine", "correctAnswer": "violet" },
+      { "id": "p_7", "text": "Un flamant rose", "correctAnswer": "rose" },
+      { "id": "p_8", "text": "Le charbon", "correctAnswer": "noir" },
+      { "id": "p_9", "text": "La neige", "correctAnswer": "blanc" },
+      { "id": "p_10", "text": "Une souris (animal)", "correctAnswer": "gris" }
+    ]
+  }
+]

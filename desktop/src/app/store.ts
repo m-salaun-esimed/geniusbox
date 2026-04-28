@@ -1,9 +1,19 @@
 import { create } from "zustand";
-import { QuestionCard, QuestionType } from "../game-engine/types";
-import { createCard, exportCards, importCardsFromJson, loadCards, saveCards } from "../storage/questionPacks";
+import { COLOR_PALETTE_IDS, QuestionCard, QuestionType } from "../game-engine/types";
+import {
+  MAX_CHOICE_COUNT,
+  MIN_CHOICE_COUNT,
+  createCard,
+  exportCards,
+  importCardsFromJson,
+  loadCards,
+  parseNumericAnswer,
+  saveCards
+} from "../storage/questionPacks";
 
 type MatchPlayerStatus = "active" | "stopped" | "eliminated";
 type MatchPhase = "in_round" | "round_summary" | "finished";
+export type GameMode = "flash" | "parcours";
 const PATHS_STORAGE_KEY = "smart10.paths";
 
 interface MatchPlayer {
@@ -47,6 +57,8 @@ interface AppState {
   setupPlayers: string[];
   targetPointsToWin: number;
   selectedCardIdsForMatch: string[];
+  gameMode: GameMode | null;
+  setGameMode: (mode: GameMode) => void;
   setPlayerName: (index: number, name: string) => void;
   addPlayer: () => void;
   removePlayer: (index: number) => void;
@@ -72,14 +84,14 @@ interface AppState {
     title: string,
     type: QuestionType,
     propositions: { text: string; correctAnswer: string }[],
-    binaryChoices?: [string, string]
+    choices?: string[]
   ) => string | null;
   updateCard: (
     cardId: string,
     title: string,
     type: QuestionType,
     propositions: { text: string; correctAnswer: string }[],
-    binaryChoices?: [string, string]
+    choices?: string[]
   ) => string | null;
   deleteCard: (cardId: string) => void;
   exportCards: (subset?: QuestionCard[]) => string;
@@ -169,9 +181,52 @@ const normalizeText = (value: string): string =>
     .toLowerCase()
     .trim();
 
+const validateCardDraft = (
+  type: QuestionType,
+  propositions: { text: string; correctAnswer: string }[],
+  choices?: string[]
+): string | null => {
+  if (type === "choice") {
+    const trimmed = (choices ?? []).map((choice) => choice.trim()).filter((choice) => choice.length > 0);
+    if (trimmed.length < MIN_CHOICE_COUNT || trimmed.length > MAX_CHOICE_COUNT) {
+      return `Une question fermée doit avoir entre ${MIN_CHOICE_COUNT} et ${MAX_CHOICE_COUNT} choix.`;
+    }
+    const validAnswers = new Set(trimmed);
+    if (propositions.some((proposition) => !validAnswers.has(proposition.correctAnswer.trim()))) {
+      return "Chaque réponse doit correspondre à l'un des choix définis.";
+    }
+  }
+  if (type === "free_number") {
+    if (propositions.some((proposition) => parseNumericAnswer(proposition.correctAnswer) === null)) {
+      return "Chaque réponse attendue doit être un nombre valide.";
+    }
+  }
+  if (type === "free_color") {
+    if (
+      propositions.some(
+        (proposition) => !COLOR_PALETTE_IDS.includes(proposition.correctAnswer.trim().toLowerCase())
+      )
+    ) {
+      return "Chaque réponse doit être une couleur de la palette.";
+    }
+  }
+  return null;
+};
+
 const getCurrentCard = (state: MatchState): QuestionCard => state.orderedCards[state.currentCardIndex];
 const isAnswerCorrect = (cardType: QuestionType, expected: string, received: string): boolean => {
   if (cardType === "free_text") {
+    return normalizeText(expected) === normalizeText(received);
+  }
+  if (cardType === "free_number") {
+    const expectedNumber = parseNumericAnswer(expected);
+    const receivedNumber = parseNumericAnswer(received);
+    if (expectedNumber === null || receivedNumber === null) {
+      return false;
+    }
+    return expectedNumber === receivedNumber;
+  }
+  if (cardType === "free_color") {
     return normalizeText(expected) === normalizeText(received);
   }
   return expected === received;
@@ -236,6 +291,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   setupPlayers: ["Joueur 1"],
   targetPointsToWin: 30,
   selectedCardIdsForMatch: [],
+  gameMode: null,
+  setGameMode: (mode) =>
+    set((state) => (state.gameMode === mode ? state : { gameMode: mode, selectedCardIdsForMatch: [] })),
   setPlayerName: (index, name) =>
     set((state) => {
       const updated = [...state.setupPlayers];
@@ -356,7 +414,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (state.selectedCardIdsForMatch.length === 0) {
       return "Sélectionne au moins une carte pour la partie.";
     }
-    const orderedCards = state.selectedCardIdsForMatch
+    const cardIdsForMatch =
+      state.gameMode === "flash"
+        ? state.selectedCardIdsForMatch.slice(0, 1)
+        : state.selectedCardIdsForMatch;
+    const orderedCards = cardIdsForMatch
       .map((id) => state.cards.find((card) => card.id === id))
       .filter((card): card is QuestionCard => Boolean(card));
     if (orderedCards.length === 0) {
@@ -369,10 +431,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       tempScore: 0,
       status: "active"
     }));
+    const matchTargetPoints =
+      state.gameMode === "flash" ? Number.MAX_SAFE_INTEGER : state.targetPointsToWin;
     set({
       matchState: {
         phase: "in_round",
-        targetPointsToWin: state.targetPointsToWin,
+        targetPointsToWin: matchTargetPoints,
         orderedCards,
         currentCardIndex: 0,
         currentPlayerId: players[0].id,
@@ -617,15 +681,10 @@ export const useAppStore = create<AppState>((set, get) => ({
       };
     }),
   terminateMatch: () => set({ matchState: null }),
-  addCard: (title, type, propositions, binaryChoices) => {
-    if (type === "binary_choice") {
-      if (!binaryChoices || binaryChoices.length !== 2 || binaryChoices.some((choice) => !choice.trim())) {
-        return "Les deux choix fermés sont obligatoires.";
-      }
-      const validAnswers = new Set(binaryChoices.map((choice) => choice.trim()));
-      if (propositions.some((proposition) => !validAnswers.has(proposition.correctAnswer.trim()))) {
-        return "Chaque réponse doit être l'un des deux choix définis.";
-      }
+  addCard: (title, type, propositions, choices) => {
+    const validationError = validateCardDraft(type, propositions, choices);
+    if (validationError) {
+      return validationError;
     }
     if (!title.trim()) {
       return "Le titre de la carte est obligatoire.";
@@ -641,32 +700,16 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (state.cards.some((card) => card.title.trim().toLowerCase() === normalizedTitle)) {
       return "Une carte avec ce titre existe déjà.";
     }
-    const updatedCards = [
-      ...state.cards,
-      createCard(
-        title,
-        type,
-        propositions,
-        type === "binary_choice" && binaryChoices
-          ? [binaryChoices[0].trim(), binaryChoices[1].trim()]
-          : undefined
-      )
-    ];
+    const trimmedChoices = type === "choice" && choices ? choices.map((choice) => choice.trim()) : undefined;
+    const updatedCards = [...state.cards, createCard(title, type, propositions, trimmedChoices)];
     saveCards(updatedCards);
-    set({
-      cards: updatedCards
-    });
+    set({ cards: updatedCards });
     return null;
   },
-  updateCard: (cardId, title, type, propositions, binaryChoices) => {
-    if (type === "binary_choice") {
-      if (!binaryChoices || binaryChoices.length !== 2 || binaryChoices.some((choice) => !choice.trim())) {
-        return "Les deux choix fermés sont obligatoires.";
-      }
-      const validAnswers = new Set(binaryChoices.map((choice) => choice.trim()));
-      if (propositions.some((proposition) => !validAnswers.has(proposition.correctAnswer.trim()))) {
-        return "Chaque réponse doit être l'un des deux choix définis.";
-      }
+  updateCard: (cardId, title, type, propositions, choices) => {
+    const validationError = validateCardDraft(type, propositions, choices);
+    if (validationError) {
+      return validationError;
     }
     if (!title.trim()) {
       return "Le titre de la carte est obligatoire.";
@@ -682,16 +725,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (state.cards.some((card) => card.id !== cardId && card.title.trim().toLowerCase() === normalizedTitle)) {
       return "Une autre carte porte déjà ce titre.";
     }
+    const trimmedChoices = type === "choice" && choices ? choices.map((choice) => choice.trim()) : undefined;
     const updatedCards = state.cards.map((card) =>
       card.id === cardId
         ? {
             ...card,
             title: title.trim(),
             type,
-            binaryChoices:
-              type === "binary_choice" && binaryChoices
-                ? ([binaryChoices[0].trim(), binaryChoices[1].trim()] as [string, string])
-                : undefined,
+            choices: trimmedChoices,
             propositions: card.propositions.map((item, index) => ({
               ...item,
               text: propositions[index].text.trim(),

@@ -1,22 +1,51 @@
 import samplePackData from "../data/questions/sample-pack.json";
-import { QuestionCard, QuestionProposition, QuestionType, TfQuestion } from "../game-engine/types";
+import {
+  COLOR_PALETTE_IDS,
+  QuestionCard,
+  QuestionProposition,
+  QuestionType,
+  TfQuestion
+} from "../game-engine/types";
 
 const STORAGE_KEY = "smart10.cards";
 const REQUIRED_PROPOSITION_COUNT = 10;
-const QUESTION_TYPES: QuestionType[] = ["true_false", "ranking", "binary_choice", "free_text"];
-const DEFAULT_BINARY_CHOICES: [string, string] = ["homme", "femme"];
+const QUESTION_TYPES: QuestionType[] = [
+  "true_false",
+  "ranking",
+  "choice",
+  "free_text",
+  "free_number",
+  "free_color"
+];
+const DEFAULT_CHOICES: string[] = ["homme", "femme"];
+const MIN_CHOICE_COUNT = 2;
+const MAX_CHOICE_COUNT = 3;
+
+export const parseNumericAnswer = (value: string): number | null => {
+  const cleaned = String(value ?? "").trim().replace(",", ".");
+  if (!cleaned) {
+    return null;
+  }
+  const parsed = Number.parseFloat(cleaned);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const sanitizeChoices = (choices: unknown): string[] | undefined => {
+  if (!Array.isArray(choices)) {
+    return undefined;
+  }
+  const trimmed = choices
+    .map((choice) => String(choice ?? "").trim())
+    .filter((choice) => choice.length > 0);
+  if (trimmed.length < MIN_CHOICE_COUNT || trimmed.length > MAX_CHOICE_COUNT) {
+    return undefined;
+  }
+  return trimmed;
+};
 
 const normalizeCard = (card: QuestionCard): QuestionCard => ({
   ...card,
-  type: QUESTION_TYPES.includes(card.type) ? card.type : "true_false",
-  binaryChoices:
-    card.type === "binary_choice"
-      ? (Array.isArray(card.binaryChoices) &&
-          card.binaryChoices.length === 2 &&
-          card.binaryChoices.every((choice) => Boolean(String(choice).trim()))
-          ? [String(card.binaryChoices[0]).trim(), String(card.binaryChoices[1]).trim()]
-          : DEFAULT_BINARY_CHOICES)
-      : undefined
+  choices: card.type === "choice" ? sanitizeChoices(card.choices) : undefined
 });
 
 const validateProposition = (proposition: QuestionProposition): boolean => {
@@ -34,11 +63,12 @@ const validateCard = (card: QuestionCard): boolean => {
   if (!QUESTION_TYPES.includes(card.type)) {
     return false;
   }
-  if (card.type === "binary_choice") {
+  if (card.type === "choice") {
     if (
-      !Array.isArray(card.binaryChoices) ||
-      card.binaryChoices.length !== 2 ||
-      card.binaryChoices.some((choice) => !String(choice).trim())
+      !Array.isArray(card.choices) ||
+      card.choices.length < MIN_CHOICE_COUNT ||
+      card.choices.length > MAX_CHOICE_COUNT ||
+      card.choices.some((choice) => !String(choice).trim())
     ) {
       return false;
     }
@@ -46,7 +76,30 @@ const validateCard = (card: QuestionCard): boolean => {
   if (!Array.isArray(card.propositions) || card.propositions.length !== REQUIRED_PROPOSITION_COUNT) {
     return false;
   }
-  return card.propositions.every(validateProposition);
+  if (!card.propositions.every(validateProposition)) {
+    return false;
+  }
+  if (card.type === "choice") {
+    const validAnswers = new Set((card.choices ?? []).map((choice) => choice.trim()));
+    if (card.propositions.some((proposition) => !validAnswers.has(String(proposition.correctAnswer).trim()))) {
+      return false;
+    }
+  }
+  if (card.type === "free_number") {
+    if (card.propositions.some((proposition) => parseNumericAnswer(proposition.correctAnswer) === null)) {
+      return false;
+    }
+  }
+  if (card.type === "free_color") {
+    if (
+      card.propositions.some(
+        (proposition) => !COLOR_PALETTE_IDS.includes(String(proposition.correctAnswer).trim().toLowerCase())
+      )
+    ) {
+      return false;
+    }
+  }
+  return true;
 };
 
 const validateQuestion = (question: TfQuestion): boolean => {
@@ -115,12 +168,12 @@ export const createCard = (
   title: string,
   type: QuestionType,
   propositions: CardDraftProposition[],
-  binaryChoices?: [string, string]
+  choices?: string[]
 ): QuestionCard => ({
   id: `card_${crypto.randomUUID()}`,
   title: title.trim(),
   type,
-  binaryChoices: type === "binary_choice" ? (binaryChoices ?? DEFAULT_BINARY_CHOICES) : undefined,
+  choices: type === "choice" ? (choices ?? DEFAULT_CHOICES).map((choice) => choice.trim()) : undefined,
   propositions: propositions.map((proposition) => ({
     id: `prop_${crypto.randomUUID()}`,
     text: proposition.text.trim(),
@@ -156,3 +209,5 @@ export const flattenCardsToQuestions = (cards: QuestionCard[]): TfQuestion[] =>
         }))
       : []
   );
+
+export { DEFAULT_CHOICES, MIN_CHOICE_COUNT, MAX_CHOICE_COUNT };

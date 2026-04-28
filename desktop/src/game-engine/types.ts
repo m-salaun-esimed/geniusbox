@@ -1,5 +1,32 @@
 export type TfAnswer = "true" | "false";
-export type QuestionType = "true_false" | "ranking" | "binary_choice" | "free_text";
+export type QuestionType =
+  | "true_false"
+  | "ranking"
+  | "choice"
+  | "free_text"
+  | "free_number"
+  | "free_color";
+
+export interface ColorPaletteEntry {
+  id: string;
+  label: string;
+  hex: string;
+}
+
+export const COLOR_PALETTE: readonly ColorPaletteEntry[] = [
+  { id: "rouge", label: "Rouge", hex: "#e53935" },
+  { id: "bleu", label: "Bleu", hex: "#1e88e5" },
+  { id: "vert", label: "Vert", hex: "#43a047" },
+  { id: "jaune", label: "Jaune", hex: "#fdd835" },
+  { id: "orange", label: "Orange", hex: "#fb8c00" },
+  { id: "violet", label: "Violet", hex: "#8e24aa" },
+  { id: "rose", label: "Rose", hex: "#ec407a" },
+  { id: "noir", label: "Noir", hex: "#212121" },
+  { id: "blanc", label: "Blanc", hex: "#fafafa" },
+  { id: "gris", label: "Gris", hex: "#757575" },
+] as const;
+
+export const COLOR_PALETTE_IDS: readonly string[] = COLOR_PALETTE.map((entry) => entry.id);
 
 export interface Player {
   id: string;
@@ -24,7 +51,7 @@ export interface QuestionCard {
   id: string;
   title: string;
   type: QuestionType;
-  binaryChoices?: [string, string];
+  choices?: string[];
   propositions: QuestionProposition[];
 }
 
