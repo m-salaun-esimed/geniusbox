@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import nathanPhoto from '../../assets/credits/nathan.png';
 import axelPhoto from '../../assets/credits/axel_prison.png';
-import jeremyPhoto from '../../assets/credits/jeremy.jpg';
+import jeremyPhoto from '../../assets/credits/jeremy_jeu.png';
 import matheoPhoto from '../../assets/credits/matheo.jpg';
 import lucasPhoto from '../../assets/credits/lucas.jpg';
 import matthieuPhoto from '../../assets/credits/matthieu_cowboy.png';
