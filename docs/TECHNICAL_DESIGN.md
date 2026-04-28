@@ -6,6 +6,7 @@ Ce document décrit la conception technique de Smart 10 dans son état actuel (s
 
 Périmètre couvert :
 - architecture desktop Electron + renderer React ;
+- extension mobile Android via Capacitor ;
 - organisation des modules et composants ;
 - modèle de données du jeu ;
 - gestion d'état et logique métier ;
@@ -20,6 +21,11 @@ Smart 10 suit une architecture à 3 couches côté client desktop :
 1. **Processus principal Electron** (main process)
 2. **Couche bridge sécurisée** (preload)
 3. **Application React** (renderer)
+
+Le même renderer React est également réutilisé pour Android via Capacitor :
+- Vite produit les assets web dans `dist/`
+- Capacitor embarque ces assets dans la WebView Android (`android/`)
+- la logique métier reste centralisée dans le store Zustand (code partagé desktop/mobile)
 
 ### 2.1 Main process Electron
 
@@ -222,7 +228,10 @@ Pour `free_text`, une validation manuelle est proposée si la normalisation ne s
 | Commande | Rôle |
 |---|---|
 | `npm run dev` | Vite + Electron en parallèle |
+| `npm run dev:android` | Vite en mode host réseau pour debug WebView |
 | `npm run build` | Build renderer + compilation TS Electron |
+| `npm run cap:sync` | Build web + synchronisation Capacitor Android |
+| `npm run cap:open:android` | Ouvre le projet natif Android dans Android Studio |
 | `npm run dist` | Packaging electron-builder |
 | `npm test` | Vitest (run once) |
 | `npm run test:watch` | Vitest en mode watch |
