@@ -11,11 +11,13 @@ import { QuestionEditor } from './setup/QuestionEditor';
 import { InRoundView } from './game/InRoundView';
 import { RoundSummaryView } from './game/RoundSummaryView';
 import { FinishedView } from './game/FinishedView';
+import { CreditsModal } from './components/CreditsModal';
 
 export const App = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [setupError, setSetupError] = useState('');
   const [endMatchConfirmOpen, setEndMatchConfirmOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const { matchState, gameMode, startMatch, terminateMatch } = useAppStore();
   const sounds = useMemo(() => createSoundEffects(), []);
   const previousPhaseRef = useRef<string | null>(null);
@@ -57,19 +59,51 @@ export const App = () => {
     onAcceptEndMatch: acceptEndMatch,
   };
 
+  const creditsButton = (
+    <button
+      type='button'
+      className='credits-fab'
+      onClick={() => setCreditsOpen(true)}
+      aria-label='Crédits'
+    >
+      i
+    </button>
+  );
+
   if (matchState?.phase === 'in_round') {
-    return <InRoundView {...endMatchProps} />;
+    return (
+      <>
+        {creditsButton}
+        <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+        <InRoundView {...endMatchProps} />
+      </>
+    );
   }
 
   if (matchState?.phase === 'round_summary') {
-    return <RoundSummaryView {...endMatchProps} />;
+    return (
+      <>
+        {creditsButton}
+        <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+        <RoundSummaryView {...endMatchProps} />
+      </>
+    );
   }
 
   if (matchState?.phase === 'finished') {
-    return <FinishedView onAcceptEndMatch={acceptEndMatch} />;
+    return (
+      <>
+        {creditsButton}
+        <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+        <FinishedView onAcceptEndMatch={acceptEndMatch} />
+      </>
+    );
   }
 
   return (
+    <>
+    {creditsButton}
+    <CreditsModal open={creditsOpen} onClose={() => setCreditsOpen(false)} />
     <main className='setup-main'>
       <section className='editor-card setup-shell'>
         <div className='setup-fixed-top'>
@@ -131,5 +165,6 @@ export const App = () => {
         </div>
       </section>
     </main>
+    </>
   );
 };
