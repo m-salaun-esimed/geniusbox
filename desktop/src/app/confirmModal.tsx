@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export type ConfirmDialogOptions = {
   title: string;
@@ -64,7 +65,7 @@ export const ConfirmDialogHost = () => {
     resolve(value);
   };
 
-  return (
+  return createPortal(
     <div className='modal-backdrop' onClick={() => handle(false)}>
       <div
         className='modal-card decision-modal confirm-modal'
@@ -87,6 +88,7 @@ export const ConfirmDialogHost = () => {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

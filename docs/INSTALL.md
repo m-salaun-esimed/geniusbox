@@ -7,7 +7,7 @@
    - Windows : `.exe`
    - Linux : `.AppImage`
 2. Ouvrez l'installeur et suivez les étapes.
-3. Lancez **Smart10 Local** depuis votre menu d'applications.
+3. Lancez **GeniusBox Local** depuis votre menu d'applications.
 
 ## Pour les développeurs
 
@@ -56,6 +56,6 @@ npm run lint         # tsc --noEmit (vérifie les types sans émettre de fichier
 
 ## Dépannage
 
-- **macOS** : si l'installation est bloquée, autorisez l'application depuis *Réglages → Confidentialité et sécurité*.
+- **macOS** : si l'installation est bloquée, autorisez l'application depuis _Réglages → Confidentialité et sécurité_.
 - **Données corrompues** : si les cartes ne se chargent plus, videz le `localStorage` de l'application (DevTools → Application → Storage → Clear) puis relancez.
 - **Port 5173 occupé** : arrêtez le processus qui utilise ce port avant de lancer `npm run dev`.

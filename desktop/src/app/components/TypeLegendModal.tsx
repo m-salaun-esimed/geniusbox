@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import {
   QUESTION_TYPE_COLOR,
   QUESTION_TYPE_DESCRIPTIONS,
@@ -10,7 +11,7 @@ type TypeLegendModalProps = {
 };
 
 export const TypeLegendModal = ({ onClose }: TypeLegendModalProps) => {
-  return (
+  return createPortal(
     <div className='modal-backdrop' onClick={onClose}>
       <div
         className='modal-card modal-card--framed'
@@ -55,6 +56,7 @@ export const TypeLegendModal = ({ onClose }: TypeLegendModalProps) => {
           </button>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

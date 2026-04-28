@@ -74,7 +74,7 @@ export const App = () => {
       <section className='editor-card setup-shell'>
         <div className='setup-fixed-top'>
           <header className='editor-header'>
-            <h1>Smart10</h1>
+            <h1>GeniusBox</h1>
             <p>Configuration de partie puis lancement.</p>
           </header>
           <StepHeader currentStep={currentStep} setCurrentStep={setCurrentStep} />

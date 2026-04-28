@@ -1,7 +1,7 @@
 import templatePack from '../../../data/questions/template-pack.json';
 import { downloadJsonFile } from '../../utils/downloadJsonFile';
 
-const AI_PROMPT = `Tu es un assistant qui transforme une carte Smart10 en JSON strictement importable.
+const AI_PROMPT = `Tu es un assistant qui transforme une carte GeniusBox en JSON strictement importable.
 Analyse la photo et retourne uniquement un JSON valide (sans markdown) au format suivant:
 [
   {
@@ -84,8 +84,8 @@ export const ImportPanel = ({
       {importFlow === 'json_ready' ? (
         <>
           <p className='counter-text'>
-            Colle un tableau JSON de cartes puis importe. Les cartes importées sont AJOUTÉES,
-            jamais remplacées.
+            Colle un tableau JSON de cartes puis importe. Les cartes importées sont AJOUTÉES, jamais
+            remplacées.
           </p>
           <textarea
             rows={10}
@@ -103,8 +103,8 @@ export const ImportPanel = ({
       {importFlow === 'from_photo' ? (
         <>
           <p className='counter-text'>
-            Prends une photo nette de la carte IRL, envoie-la à une IA, puis colle le JSON
-            renvoyé ici pour l'import.
+            Prends une photo nette de la carte IRL, envoie-la à une IA, puis colle le JSON renvoyé
+            ici pour l'import.
           </p>
           <textarea rows={12} readOnly value={AI_PROMPT} />
           <div className='inline-actions'>

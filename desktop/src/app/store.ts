@@ -181,6 +181,16 @@ const normalizeText = (value: string): string =>
     .toLowerCase()
     .trim();
 
+const sameAnswerSet = (
+  a: { correctAnswer: string }[],
+  b: { correctAnswer: string }[]
+): boolean => {
+  if (a.length !== b.length) return false;
+  const sortedA = a.map((p) => normalizeText(p.correctAnswer)).sort();
+  const sortedB = b.map((p) => normalizeText(p.correctAnswer)).sort();
+  return sortedA.every((value, index) => value === sortedB[index]);
+};
+
 const validateCardDraft = (
   type: QuestionType,
   propositions: { text: string; correctAnswer: string }[],
@@ -697,8 +707,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     const state = get();
     const normalizedTitle = title.trim().toLowerCase();
-    if (state.cards.some((card) => card.title.trim().toLowerCase() === normalizedTitle)) {
-      return "Une carte avec ce titre existe déjà.";
+    if (
+      state.cards.some(
+        (card) =>
+          card.title.trim().toLowerCase() === normalizedTitle &&
+          card.type === type &&
+          sameAnswerSet(card.propositions, propositions)
+      )
+    ) {
+      return "Une carte identique (même titre, type et réponses) existe déjà.";
     }
     const trimmedChoices = type === "choice" && choices ? choices.map((choice) => choice.trim()) : undefined;
     const updatedCards = [...state.cards, createCard(title, type, propositions, trimmedChoices)];
@@ -722,8 +739,16 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     const state = get();
     const normalizedTitle = title.trim().toLowerCase();
-    if (state.cards.some((card) => card.id !== cardId && card.title.trim().toLowerCase() === normalizedTitle)) {
-      return "Une autre carte porte déjà ce titre.";
+    if (
+      state.cards.some(
+        (card) =>
+          card.id !== cardId &&
+          card.title.trim().toLowerCase() === normalizedTitle &&
+          card.type === type &&
+          sameAnswerSet(card.propositions, propositions)
+      )
+    ) {
+      return "Une autre carte identique (même titre, type et réponses) existe déjà.";
     }
     const trimmedChoices = type === "choice" && choices ? choices.map((choice) => choice.trim()) : undefined;
     const updatedCards = state.cards.map((card) =>

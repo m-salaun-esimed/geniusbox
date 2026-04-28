@@ -1,3 +1,5 @@
+import { createPortal } from 'react-dom';
+
 type EndMatchConfirmModalProps = {
   open: boolean;
   onCancel: () => void;
@@ -8,7 +10,7 @@ export const EndMatchConfirmModal = ({ open, onCancel, onConfirm }: EndMatchConf
   if (!open) {
     return null;
   }
-  return (
+  return createPortal(
     <div className='modal-backdrop' onClick={onCancel}>
       <div
         className='modal-card decision-modal'
@@ -28,6 +30,7 @@ export const EndMatchConfirmModal = ({ open, onCancel, onConfirm }: EndMatchConf
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
