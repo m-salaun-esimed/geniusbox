@@ -20,7 +20,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "keywords": [
     "smart10",
@@ -72,7 +73,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "build-resources/icons/app-icon.jpg"
+      "icon": "build-resources/icon.png"
     },
     "linux": {
       "target": "AppImage"

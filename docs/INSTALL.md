@@ -15,6 +15,7 @@
 
 - **Node.js 20+** et npm
 - Pour Android : **Android Studio** + SDK Android installés
+- Version Android cible sur l'appareil : **Android 6.0 (API 23) minimum** — `compileSdk` / `targetSdk` 35 (Android 15). Configuré dans `android/variables.gradle`.
 
 ### Installation
 

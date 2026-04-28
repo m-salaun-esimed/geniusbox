@@ -1,8 +1,8 @@
-# Smart 10
+# GeniusBox
 
 Projet de formation Agile développé avec l'IA.
 
-Smart 10 est une application desktop de quiz et de jeu de parcours inspirée du format « 10 propositions ».
+GeniusBox est une application desktop de quiz et de jeu de parcours inspirée du format « 10 propositions ».
 Elle permet de créer des parcours, lancer des parties multi-joueurs, suivre les scores en direct et afficher un classement final.
 
 ## Captures d'écran

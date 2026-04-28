@@ -17,7 +17,7 @@ Périmètre couvert :
 
 ## 2. Architecture globale
 
-Smart 10 suit une architecture à 3 couches côté client desktop :
+GeniusBox suit une architecture à 3 couches côté client desktop :
 
 1. **Processus principal Electron** (main process)
 2. **Couche bridge sécurisée** (preload)
@@ -28,6 +28,11 @@ Le même renderer React est également réutilisé pour Android via Capacitor :
 - Vite produit les assets web dans `dist/`
 - Capacitor embarque ces assets dans la WebView Android (`android/`)
 - la logique métier reste centralisée dans le store Zustand (code partagé desktop/mobile)
+
+**Compatibilité Android** (configurée dans `android/variables.gradle`) :
+
+- `minSdkVersion = 23` → **Android 6.0 Marshmallow** minimum requis pour installer/lancer l'app
+- `compileSdkVersion = 35` et `targetSdkVersion = 35` → compilation et ciblage Android 15 (API 35)
 
 ### 2.1 Main process Electron
 

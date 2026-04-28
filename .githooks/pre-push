@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+#
+# Pre-push hook — runs the full Vitest suite before any push.
+# Push is aborted if a test fails. Bypass with `git push --no-verify`.
+
+echo "▶ pre-push: running tests..."
+
+npm run test --silent
+status=$?
+
+if [ $status -ne 0 ]; then
+  echo "✖ pre-push: tests failed — push aborted."
+  exit $status
+fi
+
+echo "✔ pre-push: tests passed."
+exit 0

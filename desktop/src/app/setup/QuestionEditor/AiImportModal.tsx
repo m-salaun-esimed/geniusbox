@@ -17,7 +17,7 @@ const formatAnswer = (type: QuestionType, value: string): string => {
   return value;
 };
 
-const AI_PROMPT = `Tu es un assistant qui transforme la photo d'une carte de quiz Smart 10 en un objet JSON strictement importable.
+const AI_PROMPT = `Tu es un assistant qui transforme la photo d'une carte de quiz  en un objet JSON strictement importable.
 
 Tu reçois UNE image. Tu DOIS retourner UNIQUEMENT un objet JSON (pas de tableau, pas de markdown, pas de texte autour, pas de bloc \`\`\`json).
 
@@ -48,7 +48,7 @@ CONTRAINTES ABSOLUES :
 - Ne traduis pas, ne reformule pas : recopie le texte de la carte tel qu'il apparaît.
 
 CAS IMAGE INUTILISABLE :
-Si l'image est floue, ne contient pas une carte Smart 10, est ambiguë, ou ne te permet pas de remplir 10 propositions de façon fiable, NE PAS INVENTER.
+Si l'image est floue, ne contient pas une carte, est ambiguë, ou ne te permet pas de remplir 10 propositions de façon fiable, NE PAS INVENTER.
 Retourne uniquement cet objet, sans rien d'autre :
 { "error": "motif court en français expliquant pourquoi tu ne peux pas extraire la carte" }
 `;
@@ -87,7 +87,10 @@ export const AiImportModal = ({ isOpen, onClose, onSave, onCopyPrompt }: AiImpor
     setSaveError('');
     const trimmed = jsonText.trim();
     if (!trimmed) {
-      setVerdict({ kind: 'parse_error', message: 'Colle le JSON renvoyé par l\'IA dans la zone ci-dessus.' });
+      setVerdict({
+        kind: 'parse_error',
+        message: "Colle le JSON renvoyé par l'IA dans la zone ci-dessus.",
+      });
       return;
     }
     let parsed: unknown;
@@ -134,10 +137,7 @@ export const AiImportModal = ({ isOpen, onClose, onSave, onCopyPrompt }: AiImpor
 
   return createPortal(
     <div className='modal-backdrop' onClick={handleClose}>
-      <div
-        className='modal-card modal-card--framed'
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className='modal-card modal-card--framed' onClick={(event) => event.stopPropagation()}>
         <header className='modal-header'>
           <div className='modal-header-text'>
             <h3>Créer une carte avec l'IA</h3>
@@ -155,7 +155,7 @@ export const AiImportModal = ({ isOpen, onClose, onSave, onCopyPrompt }: AiImpor
             <ol className='ai-import-steps'>
               <li>Ouvre une IA multimodale (Claude, Gemini, ChatGPT…).</li>
               <li>Copie le prompt ci-dessous et colle-le dans la conversation.</li>
-              <li>Joins la photo de la carte Smart 10 dans le même message.</li>
+              <li>Joins la photo de la carte dans le même message.</li>
               <li>Lance la génération.</li>
               <li>Copie le JSON renvoyé par l'IA (uniquement le JSON).</li>
               <li>Colle-le dans la zone « JSON de l'IA », vérifie, puis enregistre.</li>
@@ -269,12 +269,7 @@ export const AiImportModal = ({ isOpen, onClose, onSave, onCopyPrompt }: AiImpor
           <button type='button' onClick={handleClose}>
             Annuler
           </button>
-          <button
-            type='button'
-            className='primary-button'
-            onClick={handleSave}
-            disabled={!canSave}
-          >
+          <button type='button' className='primary-button' onClick={handleSave} disabled={!canSave}>
             Enregistrer la carte
           </button>
         </footer>

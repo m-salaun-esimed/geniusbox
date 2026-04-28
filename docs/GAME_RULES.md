@@ -1,4 +1,4 @@
-# Smart 10 — Règles fonctionnelles
+# GeniusBox — Règles fonctionnelles
 
 ## 1. Préparation de partie
 
@@ -17,14 +17,14 @@
 - Chaque proposition possède un texte et une réponse attendue.
 - **Types de carte pris en charge** :
 
-| Type | Identifiant | Description |
-|---|---|---|
-| Vrai / Faux | `true_false` | Le joueur répond Vrai ou Faux. |
-| Classement | `ranking` | Le joueur place une réponse de 1 à 10. |
-| Question fermée | `choice` | Le joueur choisit parmi 2 ou 3 réponses définies. |
-| Réponse libre (texte) | `free_text` | Le joueur saisit une réponse textuelle. |
-| Réponse libre (nombre) | `free_number` | Le joueur saisit un nombre. |
-| Réponse libre (couleur) | `free_color` | Le joueur sélectionne une couleur dans la palette. |
+| Type                    | Identifiant   | Description                                        |
+| ----------------------- | ------------- | -------------------------------------------------- |
+| Vrai / Faux             | `true_false`  | Le joueur répond Vrai ou Faux.                     |
+| Classement              | `ranking`     | Le joueur place une réponse de 1 à 10.             |
+| Question fermée         | `choice`      | Le joueur choisit parmi 2 ou 3 réponses définies.  |
+| Réponse libre (texte)   | `free_text`   | Le joueur saisit une réponse textuelle.            |
+| Réponse libre (nombre)  | `free_number` | Le joueur saisit un nombre.                        |
+| Réponse libre (couleur) | `free_color`  | Le joueur sélectionne une couleur dans la palette. |
 
 ## 3. Déroulement d'un tour
 
@@ -42,25 +42,27 @@
 
 - La comparaison est normalisée : accents supprimés, minuscules, espaces rognés.
 - En cas de non-correspondance, une **validation manuelle** est proposée à l'animateur :
-  - *Accepter quand même* → la réponse est comptée correcte.
-  - *Compter faux* → le joueur perd ses points temporaires et est éliminé.
+  - _Accepter quand même_ → la réponse est comptée correcte.
+  - _Compter faux_ → le joueur perd ses points temporaires et est éliminé.
 
 ## 5. Règles de score
 
-| Événement | Effet |
-|---|---|
-| Bonne réponse | +1 point temporaire |
-| Capitaliser | Points temporaires → score total ; joueur arrêté pour la carte |
-| Mauvaise réponse | Points temporaires perdus ; joueur éliminé |
-| Fin de carte (joueurs actifs restants) | Points temporaires transférés automatiquement au score total |
+| Événement                              | Effet                                                          |
+| -------------------------------------- | -------------------------------------------------------------- |
+| Bonne réponse                          | +1 point temporaire                                            |
+| Capitaliser                            | Points temporaires → score total ; joueur arrêté pour la carte |
+| Mauvaise réponse                       | Points temporaires perdus ; joueur éliminé                     |
+| Fin de carte (joueurs actifs restants) | Points temporaires transférés automatiquement au score total   |
 
 ## 6. Fin de carte et fin de partie
 
 **Fin de carte** — l'une des conditions suivantes :
+
 - Toutes les propositions ont été révélées.
 - Il n'y a plus de joueur actif (tous arrêtés ou éliminés).
 
 **Fin de partie** — l'une des conditions suivantes :
+
 - Un joueur atteint ou dépasse l'objectif de points (mode Parcours).
 - Le parcours est entièrement joué.
 

@@ -13,6 +13,7 @@ import { RoundSummaryView } from './game/RoundSummaryView';
 import { FinishedView } from './game/FinishedView';
 import { MatchOutroView } from './game/MatchOutroView';
 import { CreditsModal } from './components/CreditsModal';
+import logoUrl from '../assets/credits/logo-detoure.png';
 
 export const App = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -112,6 +113,7 @@ export const App = () => {
       <main className='setup-main'>
         <section className='editor-card setup-shell'>
           <div className='setup-fixed-top'>
+            <img className='setup-logo' src={logoUrl} alt='Smart 10' />
             <header className='editor-header'>
               <h1>GeniusBox</h1>
               <p>Configuration de partie puis lancement.</p>

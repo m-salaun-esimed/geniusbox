@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Smart 10 is a local desktop quiz/parcours game (Electron + React + TypeScript + Zustand + Vite, tested with Vitest). Cards each contain exactly 10 propositions across four question types: `true_false`, `ranking`, `binary_choice`, `free_text`.
+GeniusBox is a local desktop quiz/parcours game (Electron + React + TypeScript + Zustand + Vite, tested with Vitest). Cards each contain exactly 10 propositions across four question types: `true_false`, `ranking`, `binary_choice`, `free_text`.
 
 ## Common commands
 
@@ -50,7 +50,7 @@ Cards and saved parcours live in `localStorage` only (no encryption, no schema v
 ## Known divergences / gotchas
 
 - Production game logic is in `store.ts`, not in `game-engine/engine.ts`. When touching rules, update the store; only update `engine.ts` if you also update `engine.test.ts`.
-- The string "GeniusBox" still appears in `App.tsx` though the product is "Smart 10".
+- The string "GeniusBox" still appears in `App.tsx` though the product is "GeniusBox".
 - No automated coverage of the multi-type store flow yet (only the legacy true/false engine is tested).
 - Card-creation duplicate-title path currently throws instead of returning a result message — be aware when adding callers.
 
