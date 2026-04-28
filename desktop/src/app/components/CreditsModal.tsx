@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import nathanPhoto from '../../assets/credits/nathan.png';
-import axelPhoto from '../../assets/credits/axel.jpg';
+import axelPhoto from '../../assets/credits/axel_prison.png';
 import jeremyPhoto from '../../assets/credits/jeremy.jpg';
 import matheoPhoto from '../../assets/credits/matheo.jpg';
 import lucasPhoto from '../../assets/credits/lucas.jpg';
@@ -13,11 +13,11 @@ type CreditPerson = {
 };
 
 const CREDITS_PEOPLE: CreditPerson[] = [
-  { name: 'Nathan Sabaty', photo: nathanPhoto, quote: 'Citation de Nathan.' },
+  { name: 'Nathan Sabaty', photo: nathanPhoto, quote: 'je fais 2 3 bar mitzvah.' },
   { name: 'Axel Lapierre', photo: axelPhoto, quote: 'top goy.' },
-  { name: 'Jeremy Merklin', photo: jeremyPhoto, quote: 'Si je te fend le crane en deux quel oeil se fermera le premier.' },
-  { name: 'Matheo Bert', photo: matheoPhoto, quote: 'Noir is the new black.' },
-  { name: 'Lucas Joly', photo: lucasPhoto, quote: 'psartek le degrade mohamed.' },
+  { name: 'Jeremy Mercklen', photo: jeremyPhoto, quote: 'Si je te fend le crane en deux quel oeil se fermera le premier.' },
+  { name: 'Matheo Bert', photo: matheoPhoto, quote: 'Orange is the new orange.' },
+  { name: 'Lucas Joly', photo: lucasPhoto, quote: 'psartek le degrade.' },
   { name: 'Matthieu Salaun', photo: matthieuPhoto, quote: 'A toi mon bébé à toi ma futur femme.' },
 ];
 
