@@ -7,6 +7,7 @@ type ExportPanelProps = {
   cards: Card[];
   selectedExportCardIds: string[];
   toggleExportCard: (cardId: string) => void;
+  onToggleAll: () => void;
   onDownload: () => void;
   onClose: () => void;
 };
@@ -15,9 +16,11 @@ export const ExportPanel = ({
   cards,
   selectedExportCardIds,
   toggleExportCard,
+  onToggleAll,
   onDownload,
   onClose,
 }: ExportPanelProps) => {
+  const allSelected = cards.length > 0 && cards.length === selectedExportCardIds.length;
   return (
     <div className='panel'>
       <h4>Page Export JSON</h4>
@@ -25,6 +28,11 @@ export const ExportPanel = ({
         Coche les cartes à exporter, puis télécharge le JSON généré pour le partager/importer
         ailleurs.
       </p>
+      <div className='inline-actions'>
+        <button type='button' onClick={onToggleAll}>
+          {allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+        </button>
+      </div>
       <ul className='question-list'>
         {cards.map((card) => (
           <li
