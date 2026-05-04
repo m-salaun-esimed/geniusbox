@@ -232,24 +232,20 @@ export const QuestionEditor = ({ currentStep }: QuestionEditorProps) => {
       {message ? <p className='status-message'>{message}</p> : null}
       {importError ? <p className='status-message status-error'>{importError}</p> : null}
 
-      <h3>Tableau des cartes</h3>
-      <CardsGrid
-        cards={cards}
-        selectedCardId={selectedCardId}
-        onOpen={openEditModal}
-        onDeleted={(cardId) => {
-          if (selectedCardId === cardId) {
-            setSelectedCardId(null);
-          }
-        }}
-      />
-
       <hr className='section-separator' />
       {ioMode === 'export' ? (
         <ExportPanel
           cards={cards}
           selectedExportCardIds={selectedExportCardIds}
           toggleExportCard={toggleExportCard}
+          onToggleAll={() => {
+            if (selectedExportCardIds.length === cards.length) {
+              setSelectedExportCardIds([]);
+            } else {
+              setSelectedExportCardIds(cards.map((c) => c.id));
+            }
+            sounds.navigate();
+          }}
           onDownload={handleDownloadExport}
           onClose={() => {
             setIoMode('none');
@@ -288,6 +284,18 @@ export const QuestionEditor = ({ currentStep }: QuestionEditorProps) => {
           }}
         />
       ) : null}
+
+      <h3>Tableau des cartes</h3>
+      <CardsGrid
+        cards={cards}
+        selectedCardId={selectedCardId}
+        onOpen={openEditModal}
+        onDeleted={(cardId) => {
+          if (selectedCardId === cardId) {
+            setSelectedCardId(null);
+          }
+        }}
+      />
 
       <CardEditorModal
         mode='create'
