@@ -3795,10 +3795,18 @@ textarea:focus-visible,
     0 18px 40px -22px rgba(0, 0, 0, 0.7),
     inset 0 0 0 1px color-mix(in oklab, var(--type-color, var(--accent-amber)) 25%, transparent),
     0 0 26px -6px color-mix(in oklab, var(--type-color, var(--accent-amber)) 45%, transparent);
+  z-index: 2;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wheel-center:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  z-index: 10;
 }
 
 .wheel-center-label {
   display: block;
+  flex-shrink: 0;
   font-size: 0.62rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -3808,7 +3816,11 @@ textarea:focus-visible,
 }
 
 .wheel-center-title {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(0.95rem, 1.6vw, 1.45rem);
   line-height: 1.18;
@@ -3818,11 +3830,18 @@ textarea:focus-visible,
   hyphens: auto;
 }
 
+.wheel-center:hover .wheel-center-title {
+  display: block;
+  overflow: visible;
+  height: auto;
+}
+
 .wheel-prop {
   position: absolute;
   transform: translate(-50%, -50%);
   width: clamp(96px, 16%, 150px);
   min-height: 56px;
+  height: auto;
   padding: 0.55rem 0.7rem 0.55rem 1.85rem;
   border-radius: 14px;
   border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
@@ -3834,7 +3853,9 @@ textarea:focus-visible,
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   backdrop-filter: blur(4px);
+  z-index: 1;
   box-shadow:
     0 12px 28px -22px rgba(0, 0, 0, 0.85),
     inset 0 1px 0 color-mix(in oklab, white 6%, transparent);
@@ -3843,10 +3864,12 @@ textarea:focus-visible,
     border-color 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease,
+    z-index 0s,
     opacity 0.2s ease;
 }
 
 .wheel-prop:hover:not(:disabled) {
+  z-index: 10;
   transform: translate(-50%, -50%) scale(1.04);
   border-color: color-mix(in oklab, var(--type-color, var(--accent-amber)) 65%, transparent);
   background: color-mix(in oklab, var(--type-color, var(--accent-amber)) 10%, var(--surface-2));
@@ -3886,6 +3909,17 @@ textarea:focus-visible,
   overflow: hidden;
   text-align: center;
   flex: 1;
+  width: 100%;
+  font-size: 0.72rem;
+  line-height: 1.18;
+  word-break: break-word;
+  white-space: normal;
+  hyphens: auto;
+}
+
+.wheel-prop:hover .wheel-prop-text {
+  display: block;
+  overflow: visible;
 }
 
 .wheel-prop.is-active {
@@ -4309,8 +4343,7 @@ textarea:focus-visible,
   }
 
   .wheel-prop-text {
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    /* No line clamp applied anymore */
   }
 
   .wheel-center {

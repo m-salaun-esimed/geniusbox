@@ -412,7 +412,7 @@ export const InRoundView = ({
                 </svg>
                 <div className='wheel-center'>
                   <span className='wheel-center-label'>Question</span>
-                  <span className='wheel-center-title'>{card.title}</span>
+                  <span className='wheel-center-title' title={card.title}>{card.title}</span>
                 </div>
                 {card.propositions.map((proposition, idx) => {
                   const angle = (idx / card.propositions.length) * 2 * Math.PI - Math.PI / 2;
@@ -424,6 +424,7 @@ export const InRoundView = ({
                     <button
                       type='button'
                       key={proposition.id}
+                      title={proposition.text}
                       className={`wheel-prop ${isSelected ? 'is-active' : ''} ${isRevealed ? 'is-revealed' : ''}`}
                       style={{
                         left: `calc(50% + var(--wheel-radius) * ${cos})`,
