@@ -30,7 +30,7 @@ Le flux d'import/export est disponible dans l'étape Cartes.
 
 Export :
 - action Mode Export ;
-- sélection des cartes à exporter ;
+- sélection des cartes à exporter (possibilité de selectionner/déselectionner toutes les cartes avec un bouton) ;
 - génération d'un JSON copiable contenant uniquement la sélection.
 
 Import :
