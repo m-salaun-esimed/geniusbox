@@ -24,7 +24,39 @@ Règles de validation :
 - pour `free_number` : chaque réponse attendue doit être un nombre valide (la virgule décimale est acceptée) ;
 - pour `free_color` : chaque réponse attendue doit correspondre à un identifiant de la palette (`rouge`, `bleu`, `vert`, `jaune`, `orange`, `violet`, `rose`, `noir`, `blanc`, `gris`).
 
-## 2. Export / import des cartes
+## 2. Import assisté par IA
+
+L'application propose une modale **Créer une carte avec l'IA** accessible depuis l'étape Cartes.
+
+### Principe
+
+L'import IA ne nécessite pas de connexion directe à un service externe : il s'appuie sur un prompt standardisé que l'utilisateur copie et colle dans une IA multimodale externe (Claude, Gemini, ChatGPT…), puis colle en retour le JSON généré.
+
+### Mode d'emploi
+
+1. Ouvrir une IA multimodale (Claude, Gemini, ChatGPT…).
+2. Copier le prompt fourni dans la modale (bouton **Copier le prompt**).
+3. Coller le prompt dans la conversation IA et joindre la photo de la carte.
+4. Lancer la génération.
+5. Copier le JSON renvoyé par l'IA (uniquement le JSON, sans bloc markdown).
+6. Coller le JSON dans la zone **JSON de l'IA** de la modale.
+7. Cliquer sur **Vérifier le JSON** — l'aperçu de la carte s'affiche si le JSON est valide.
+8. Vérifier le titre, le type et chaque réponse, puis cliquer sur **Enregistrer la carte**.
+
+### Comportement de la vérification
+
+| Cas | Comportement |
+| --- | ------------ |
+| JSON valide | Aperçu de la carte avec titre, type, choix éventuels et liste des propositions |
+| JSON invalide (schéma) | Liste des erreurs de validation |
+| JSON non parsable | Message d'erreur de syntaxe |
+| IA refuse la photo | Message « L'IA n'a pas pu lire la carte » avec le motif retourné |
+
+Si l'image est floue, hors-sujet ou ne permet pas de remplir 10 propositions, l'IA retourne `{ "error": "..." }` et la modale affiche le motif sans tenter d'enregistrer quoi que ce soit.
+
+---
+
+## 3. Export / import des cartes
 
 Le flux d'import/export est disponible dans l'étape Cartes.
 
@@ -43,7 +75,7 @@ Remarques importantes :
 - si le JSON est invalide, l'import est refusé ;
 - les cartes importées sont persistées localement.
 
-## 3. Choix des cartes pour le parcours de partie
+## 4. Choix des cartes pour le parcours de partie
 
 Le parcours se compose dans l'étape Parcours :
 
@@ -57,7 +89,7 @@ Remarques importantes :
 - les parcours peuvent être sauvegardés localement (nom + catégorie + ordre des cartes) ;
 - le parcours n'est pas exporté/importé comme objet distinct en JSON.
 
-## 4. Structure JSON attendue
+## 5. Structure JSON attendue
 
 Le JSON importé/exporté est un tableau de cartes.
 

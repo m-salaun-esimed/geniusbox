@@ -4,3 +4,5 @@ dist
 dist-electron
 build-resources
 android
+docs/pdf
+docs/_convert_to_pdf.py

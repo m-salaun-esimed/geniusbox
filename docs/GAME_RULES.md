@@ -7,6 +7,7 @@
   - **Flash** — une seule carte jouée, idéal pour une démonstration ou une partie éclair.
   - **Parcours** — plusieurs cartes enchaînées ; un objectif de points est défini.
 - Un **timer d'ambiance** est configurable : 15 s, 30 s ou 45 s.
+- Un mode **Mort subite** est disponible (optionnel) : chaque joueur dispose d'un temps limité par tour (5 s à 120 s, par défaut 30 s). Si le temps s'écoule, le tour est forfait — équivalent à une mauvaise réponse.
 - Le parcours est constitué en sélectionnant des cartes depuis l'éditeur.
 - L'ordre des cartes est modifiable par glisser-déposer avant le démarrage.
 - Des parcours peuvent être sauvegardés, chargés, mis à jour ou supprimés.
@@ -68,7 +69,17 @@
 
 En cas d'égalité, **plusieurs gagnants** sont possibles (podium partagé).
 
-## 7. Import / Export et parcours
+## 7. Mode Mort subite
+
+Le mode **Mort subite** s'active dans la configuration de partie (étape Mode de jeu).
+
+- Lorsqu'il est activé, un compte à rebours démarre dès que le joueur actif commence son tour.
+- La durée est configurable entre 5 et 120 secondes (paliers proposés : 15 s, 30 s, 45 s ; saisie libre également acceptée).
+- Si le temps atteint zéro, le tour est automatiquement comptabilisé comme une mauvaise réponse (message « Temps écoulé »).
+- Le timer se relance à chaque changement de joueur actif.
+- Le badge **Mort subite** est affiché en permanence dans la vue de jeu lorsque ce mode est actif.
+
+## 8. Import / Export et parcours
 
 - **Export** : tout ou partie des cartes exportées au format JSON.
 - **Import** : un fichier JSON valide ajoute des cartes au catalogue existant (additif).

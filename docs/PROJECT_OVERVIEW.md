@@ -83,6 +83,7 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 
 - Export des cartes sélectionnées en JSON depuis l'étape Cartes.
 - Import d'un JSON valide pour ajouter des cartes au catalogue existant.
+- **Import assisté par IA** : prompt standardisé à copier dans une IA multimodale externe ; le JSON généré est collé, vérifié puis enregistré directement depuis l'application.
 - Construction du parcours depuis l'étape Parcours : ajout, retrait et réordonnancement des cartes.
 - Les parcours peuvent être sauvegardés et réutilisés localement.
 - Les parcours ne sont pas importés/exportés en JSON (seules les cartes le sont).
@@ -93,6 +94,7 @@ Le projet sert de support d'apprentissage pour les pratiques Agile :
 - Choisir un mode de jeu : **Flash** (une seule carte) ou **Parcours** (plusieurs cartes enchaînées avec objectif de points).
 - Définir un score cible (mode Parcours) ou jouer sans limite (mode Flash).
 - Régler un timer d'ambiance (15 s, 30 s ou 45 s) pour le rythme de jeu.
+- Activer le mode **Mort subite** (compte à rebours par tour, 5–120 s) pour imposer une limite de temps stricte.
 - Répondre proposition par proposition.
 - Verrouiller les propositions déjà traitées.
 - Afficher un retour visuel immédiat (bonne/mauvaise réponse).

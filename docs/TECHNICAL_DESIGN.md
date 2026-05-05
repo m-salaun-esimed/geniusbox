@@ -96,7 +96,7 @@ desktop/src/
 │   │       ├── CardEditorModal.tsx    # Modale création / édition d'une carte
 │   │       ├── ExportPanel.tsx        # Panel d'export JSON
 │   │       ├── ImportPanel.tsx        # Panel d'import JSON
-│   │       └── AiImportModal.tsx      # Modale d'import assistée par IA
+│   │       └── AiImportModal.tsx      # Modale import IA : prompt copié vers IA externe, JSON collé et validé avant enregistrement
 │   ├── game/
 │   │   ├── InRoundView.tsx            # Vue de jeu en cours de manche
 │   │   ├── RoundSummaryView.tsx       # Vue résumé de fin de manche
@@ -149,6 +149,14 @@ Chaque `MatchPlayer` possède :
 | ---------- | ----------------------------------------------------------------- |
 | `flash`    | Une seule carte jouée ; `targetPointsToWin = MAX_SAFE_INTEGER`    |
 | `parcours` | Toutes les cartes sélectionnées ; objectif de points configurable |
+
+### 4.4 Mode Mort subite
+
+Activable indépendamment du mode de jeu. Lorsqu'il est activé (`suddenDeath: true`) :
+
+- `suddenDeathDuration` (entier, 5–120 s, défaut 30) est propagé dans `MatchState` au démarrage.
+- `InRoundView` lance un compte à rebours à chaque changement de `currentPlayerId` ou de `currentCardIndex`.
+- À zéro, `forfeitTurnAsTimeout()` est appelé — traité comme une mauvaise réponse avec le message `TIMEOUT_FEEDBACK_MESSAGE` ("Temps écoulé").
 
 ## 5. Modèle de données
 
